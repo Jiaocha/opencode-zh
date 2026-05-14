@@ -7,135 +7,170 @@
     </picture>
   </a>
 </p>
-<p align="center">The open source AI coding agent.</p>
-<p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
-</p>
+
+<p align="center"><strong>OpenCode 简体中文构建版</strong></p>
+<p align="center">面向终端、桌面端和 Web 端的开源 AI 编程代理。</p>
 
 <p align="center">
-  <a href="README.md">English</a> |
-  <a href="README.zh.md">简体中文</a> |
-  <a href="README.zht.md">繁體中文</a> |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.fr.md">Français</a> |
-  <a href="README.it.md">Italiano</a> |
-  <a href="README.da.md">Dansk</a> |
-  <a href="README.ja.md">日本語</a> |
-  <a href="README.pl.md">Polski</a> |
-  <a href="README.ru.md">Русский</a> |
-  <a href="README.bs.md">Bosanski</a> |
-  <a href="README.ar.md">العربية</a> |
-  <a href="README.no.md">Norsk</a> |
-  <a href="README.br.md">Português (Brasil)</a> |
-  <a href="README.th.md">ไทย</a> |
-  <a href="README.tr.md">Türkçe</a> |
-  <a href="README.uk.md">Українська</a> |
-  <a href="README.bn.md">বাংলা</a> |
-  <a href="README.gr.md">Ελληνικά</a> |
-  <a href="README.vi.md">Tiếng Việt</a>
+  <a href="https://github.com/Jiaocha/opencode-zh/releases"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/Jiaocha/opencode-zh?style=flat-square&label=opencode-zh" /></a>
+  <a href="https://github.com/Jiaocha/opencode-zh/actions/workflows/zh-release.yml"><img alt="zh-release" src="https://img.shields.io/github/actions/workflow/status/Jiaocha/opencode-zh/zh-release.yml?style=flat-square&branch=dev&label=zh-release" /></a>
+  <a href="https://github.com/anomalyco/opencode"><img alt="upstream" src="https://img.shields.io/badge/forked%20from-anomalyco%2Fopencode-blue?style=flat-square" /></a>
 </p>
 
 [![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
 
----
+## 项目说明
 
-### Installation
+本仓库是 [anomalyco/opencode](https://github.com/anomalyco/opencode) 的 fork，目标是在不改变 OpenCode 原有功能的前提下，持续维护完整的简体中文体验。
 
-```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
+汉化内容覆盖：
 
-# Package managers
-npm i -g opencode-ai@latest        # or bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS and Linux (recommended, always up to date)
-brew install opencode              # macOS and Linux (official brew formula, updated less)
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # Any OS
-nix run nixpkgs#opencode           # or github:anomalyco/opencode for latest dev branch
-```
+- CLI 命令、参数说明、帮助文本和错误提示
+- TUI 终端界面、对话框、状态栏、权限提示和操作反馈
+- Web 端站点文案、分享页文本和中文文档
+- 桌面端源码与上游结构同步保留
+- GitHub Release 的中文发布说明、版本号和更新内容
 
-> [!TIP]
-> Remove versions older than 0.1.x before installing.
+## 自动同步与发布
 
-### Desktop App (BETA)
+仓库内置 `zh-release` GitHub Actions 工作流：
 
-OpenCode is also available as a desktop application. Download directly from the [releases page](https://github.com/anomalyco/opencode/releases) or [opencode.ai/download](https://opencode.ai/download).
+1. 定期从上游 `anomalyco/opencode` 拉取最新 `dev` 分支。
+2. 合并上游更新时保留本仓库的 `localization` 汉化工具链、中文 README 和发布脚本。
+3. 自动执行汉化应用、缺失词条扫描和完整性检查。
+4. 构建并校验指定平台的可执行文件。
+5. 自动创建或更新 GitHub Release。
 
-| Platform              | Download                           |
-| --------------------- | ---------------------------------- |
-| macOS (Apple Silicon) | `opencode-desktop-mac-arm64.dmg`   |
-| macOS (Intel)         | `opencode-desktop-mac-x64.dmg`     |
-| Windows               | `opencode-desktop-windows-x64.exe` |
-| Linux                 | `.deb`, `.rpm`, or `.AppImage`     |
+当前自动发布的 CLI 构建资产：
 
-```bash
-# macOS (Homebrew)
-brew install --cask opencode-desktop
-# Windows (Scoop)
-scoop bucket add extras; scoop install extras/opencode-desktop
-```
+| 平台    | 架构        | 发布文件                      |
+| ------- | ----------- | ----------------------------- |
+| Linux   | amd64 / x64 | `opencode-linux-x64.tar.gz`   |
+| Linux   | arm64       | `opencode-linux-arm64.tar.gz` |
+| Windows | 64 位 / x64 | `opencode-windows-x64.zip`    |
 
-#### Installation Directory
+最新版本请查看 [Releases](https://github.com/Jiaocha/opencode-zh/releases)。
 
-The install script respects the following priority order for the installation path:
+## 安装与使用
 
-1. `$OPENCODE_INSTALL_DIR` - Custom installation directory
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification compliant path
-3. `$HOME/bin` - Standard user binary directory (if it exists or can be created)
-4. `$HOME/.opencode/bin` - Default fallback
+下载对应平台的 Release 资产后解压，将 `opencode` 或 `opencode.exe` 放入 `PATH`。
+
+Linux 示例：
 
 ```bash
-# Examples
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
+tar -xzf opencode-linux-x64.tar.gz
+chmod +x opencode
+./opencode --version
 ```
 
-### Agents
+Windows 示例：
 
-OpenCode includes two built-in agents you can switch between with the `Tab` key.
+```powershell
+Expand-Archive .\opencode-windows-x64.zip -DestinationPath .\opencode
+.\opencode\opencode.exe --version
+```
 
-- **build** - Default, full-access agent for development work
-- **plan** - Read-only agent for analysis and code exploration
-  - Denies file edits by default
-  - Asks permission before running bash commands
-  - Ideal for exploring unfamiliar codebases or planning changes
+启动 TUI：
 
-Also included is a **general** subagent for complex searches and multistep tasks.
-This is used internally and can be invoked using `@general` in messages.
+```bash
+opencode
+```
 
-Learn more about [agents](https://opencode.ai/docs/agents).
+## 桌面端
 
-### Documentation
+桌面端源码位于 `packages/desktop`，随上游 OpenCode 持续同步。本仓库保留桌面端构建能力，适合需要 Electron 桌面体验的用户自行打包。
 
-For more info on how to configure OpenCode, [**head over to our docs**](https://opencode.ai/docs).
+常用命令：
 
-### Contributing
+```bash
+bun install
+bun --cwd packages/desktop dev
+bun --cwd packages/desktop build
+bun --cwd packages/desktop package
+```
 
-If you're interested in contributing to OpenCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
+平台打包命令：
 
-### Building on OpenCode
+```bash
+bun --cwd packages/desktop package:win
+bun --cwd packages/desktop package:linux
+bun --cwd packages/desktop package:mac
+```
 
-If you are working on a project that's related to OpenCode and is using "opencode" as part of its name, for example "opencode-dashboard" or "opencode-mobile", please add a note to your README to clarify that it is not built by the OpenCode team and is not affiliated with us in any way.
+桌面端更新和安装包格式仍遵循上游项目约定。
 
-### FAQ
+## Web 端
 
-#### How is this different from Claude Code?
+Web 文档站位于 `packages/web`，交互式 Web App 位于 `packages/app`。本仓库保留中文站点资源和中文文档目录：
 
-It's very similar to Claude Code in terms of capability. Here are the key differences:
+- Web i18n：`packages/web/src/content/i18n/zh-CN.json`
+- 中文文档：`packages/web/src/content/docs/zh-cn`
+- Web App：`packages/app`
 
-- 100% open source
-- Not coupled to any provider. Although we recommend the models we provide through [OpenCode Zen](https://opencode.ai/zen), OpenCode can be used with Claude, OpenAI, Google, or even local models. As models evolve, the gaps between them will close and pricing will drop, so being provider-agnostic is important.
-- Built-in opt-in LSP support
-- A focus on TUI. OpenCode is built by neovim users and the creators of [terminal.shop](https://terminal.shop); we are going to push the limits of what's possible in the terminal.
-- A client/server architecture. This, for example, can allow OpenCode to run on your computer while you drive it remotely from a mobile app, meaning that the TUI frontend is just one of the possible clients.
+本地运行文档站：
 
----
+```bash
+bun install
+bun --cwd packages/web dev
+```
 
-**Join our community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+构建文档站：
+
+```bash
+bun --cwd packages/web build
+```
+
+运行 Web App：
+
+```bash
+bun --cwd packages/app dev
+```
+
+构建 Web App：
+
+```bash
+bun --cwd packages/app build
+```
+
+## 汉化维护
+
+汉化工具链位于 `localization`：
+
+- `localization/dictionaries/zh-CN`：CLI/TUI 词典
+- `localization/scripts/apply-localization.ts`：生成中文 i18n 入口
+- `localization/scripts/extract-tui.ts`：扫描潜在缺失词条
+- `localization/scripts/patch-source.ts`：将界面文本接入中文词典
+- `localization/scripts/check-complete.ts`：检查汉化完整性
+
+手动执行完整汉化流程：
+
+```bash
+bun run ./localization/scripts/localize-onekey.ts
+```
+
+仅检查是否遗漏：
+
+```bash
+bun run ./localization/scripts/check-complete.ts
+```
+
+检查项包括 CLI/TUI 缺失键、空翻译、Web i18n 键覆盖、中文文档页面数量、疑似英文原文整页复制等。
+
+## 从上游同步最新版
+
+推荐使用 GitHub Actions 的 `zh-release` 手动触发：
+
+1. 打开 [zh-release 工作流](https://github.com/Jiaocha/opencode-zh/actions/workflows/zh-release.yml)。
+2. 选择 `Run workflow`。
+3. `upstream_ref` 保持 `dev`，需要强制重建时开启 `force_release`。
+4. 工作流会自动同步上游、保留汉化、构建并发布。
+
+本地手动同步时请确保保留 `localization` 目录和中文 README，再运行汉化脚本。
+
+## 与上游的关系
+
+OpenCode 原项目归 [anomalyco/opencode](https://github.com/anomalyco/opencode) 维护。本仓库仅维护简体中文本地化、自动化构建和中文发布资产，不改变上游项目的许可证、核心功能和架构方向。
+
+## 许可证
+
+本仓库遵循上游 OpenCode 的许可证。详见 [LICENSE](LICENSE)。
