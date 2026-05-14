@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       upstream_ref:
-        description: "Upstream branch, tag, or commit to sync"
+        description: "Upstream branch, tag, or commit to check for version updates"
         required: false
         default: "dev"
       create_release:
@@ -16,7 +16,7 @@ on:
         type: boolean
         default: true
       force_release:
-        description: "Re-localize, rebuild, and release even without upstream updates"
+        description: "Re-localize, rebuild, and release the current downstream version even without an upstream version update"
         required: false
         type: boolean
         default: false
@@ -46,6 +46,8 @@ jobs:
       upstream_ref: ${{ steps.plan.outputs.upstream_ref }}
       upstream_before: ${{ steps.plan.outputs.upstream_before }}
       upstream_after: ${{ steps.plan.outputs.upstream_after }}
+      current_version: ${{ steps.plan.outputs.current_version }}
+      upstream_version: ${{ steps.plan.outputs.upstream_version }}
       head_sha: ${{ steps.push.outputs.head_sha }}
       version: ${{ steps.release_notes.outputs.version }}
       tag: ${{ steps.release_notes.outputs.tag }}
@@ -100,32 +102,44 @@ jobs:
 
           upstream_sha="$(git rev-parse FETCH_HEAD)"
           upstream_before="$(git merge-base HEAD "$upstream_sha")"
+          current_version="$(node -e "const fs = require('fs'); const text = fs.readFileSync('packages/opencode/package.json', 'utf8').replace(/^\uFEFF+/, ''); console.log(JSON.parse(text).version)")"
+          upstream_version="$(git show "$upstream_sha:packages/opencode/package.json" | node -e "let data = ''; process.stdin.setEncoding('utf8'); process.stdin.on('data', (chunk) => data += chunk); process.stdin.on('end', () => console.log(JSON.parse(data.replace(/^\uFEFF+/, '')).version))")"
 
           {
             echo "upstream_ref=$upstream_ref"
             echo "upstream_before=$upstream_before"
             echo "upstream_after=$upstream_sha"
+            echo "current_version=$current_version"
+            echo "upstream_version=$upstream_version"
           } >> "$GITHUB_OUTPUT"
 
-          if git merge-base --is-ancestor "$upstream_sha" HEAD; then
+          echo "Current downstream version: $current_version"
+          echo "Upstream $UPSTREAM_REPO@$upstream_ref version: $upstream_version"
+
+          if [ "$upstream_version" = "$current_version" ]; then
             if [ "$force_release" != "true" ]; then
-              echo "Upstream $UPSTREAM_REPO@$upstream_ref is already included; skipping build and release."
+              echo "No upstream version update detected; skipping localization, build, and release."
               {
                 echo "should_build=false"
                 echo "should_release=false"
               } >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            echo "No new upstream commit found, but force_release=true; continuing localization and build."
+            echo "No upstream version update detected, but force_release=true; rebuilding current downstream version without merging non-version upstream commits."
           else
-            git merge --no-edit --no-ff -X theirs "$upstream_sha"
-            for item in "${preserve_items[@]}"; do
-              if [ -e "$preserve_dir/$item" ]; then
-                rm -rf "$item"
-                mkdir -p "$(dirname "$item")"
-                cp -a "$preserve_dir/$item" "$item"
-              fi
-            done
+            echo "Upstream version update detected: $current_version -> $upstream_version"
+            if git merge-base --is-ancestor "$upstream_sha" HEAD; then
+              echo "Upstream commit is already included; continuing localization and build."
+            else
+              git merge --no-edit --no-ff -X theirs "$upstream_sha"
+              for item in "${preserve_items[@]}"; do
+                if [ -e "$preserve_dir/$item" ]; then
+                  rm -rf "$item"
+                  mkdir -p "$(dirname "$item")"
+                  cp -a "$preserve_dir/$item" "$item"
+                fi
+              done
+            fi
           fi
 
           {
