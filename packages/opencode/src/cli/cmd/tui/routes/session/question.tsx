@@ -1,6 +1,7 @@
 import { t } from "@/i18n"
 import { createStore } from "solid-js/store"
 import { createMemo, createSignal, For, Show } from "solid-js"
+import { useRenderer } from "@opentui/solid"
 import type { TextareaRenderable } from "@opentui/core"
 import { selectedForeground, tint, useTheme } from "../../context/theme"
 import type { QuestionAnswer, QuestionRequest } from "@opencode-ai/sdk/v2"
@@ -13,6 +14,7 @@ import { useBindings } from "../../keymap"
 export function QuestionPrompt(props: { request: QuestionRequest }) {
   const sdk = useSDK()
   const { theme } = useTheme()
+  const renderer = useRenderer()
   const tuiConfig = useTuiConfig()
 
   const questions = createMemo(() => props.request.questions)
@@ -343,7 +345,10 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
                     }
                     onMouseOver={() => setTabHover(index())}
                     onMouseOut={() => setTabHover(null)}
-                    onMouseUp={() => selectTab(index())}
+                    onMouseUp={() => {
+                      if (renderer.getSelection()?.getSelectedText()) return
+                      selectTab(index())
+                    }}
                   >
                     <text
                       fg={
@@ -368,7 +373,10 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
               }
               onMouseOver={() => setTabHover("confirm")}
               onMouseOut={() => setTabHover(null)}
-              onMouseUp={() => selectTab(questions().length)}
+              onMouseUp={() => {
+                if (renderer.getSelection()?.getSelectedText()) return
+                selectTab(questions().length)
+              }}
             >
               <text fg={confirm() ? selectedForeground(theme, theme.accent) : theme.textMuted}>
                 {t("tui.common.confirm")}
@@ -394,7 +402,10 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
                     <box
                       onMouseOver={() => moveTo(i())}
                       onMouseDown={() => moveTo(i())}
-                      onMouseUp={() => selectOption()}
+                      onMouseUp={() => {
+                        if (renderer.getSelection()?.getSelectedText()) return
+                        selectOption()
+                      }}
                     >
                       <box flexDirection="row">
                         <box backgroundColor={active() ? theme.backgroundElement : undefined} paddingRight={1}>
@@ -423,7 +434,10 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
                 <box
                   onMouseOver={() => moveTo(options().length)}
                   onMouseDown={() => moveTo(options().length)}
-                  onMouseUp={() => selectOption()}
+                  onMouseUp={() => {
+                    if (renderer.getSelection()?.getSelectedText()) return
+                    selectOption()
+                  }}
                 >
                   <box flexDirection="row">
                     <box backgroundColor={other() ? theme.backgroundElement : undefined} paddingRight={1}>
