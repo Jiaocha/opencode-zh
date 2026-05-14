@@ -206,7 +206,7 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const filepath = typeof raw === "string" ? raw : ""
               return {
                 icon: "→",
-                title: `Edit ${pathFormatter.format(filepath)}`,
+                title: `${t("tui.common.edit")} ${pathFormatter.format(filepath)}`,
                 body: <EditBody request={props.request} />,
               }
             }
@@ -216,11 +216,13 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const filePath = typeof raw === "string" ? raw : ""
               return {
                 icon: "→",
-                title: `Read ${pathFormatter.format(filePath)}`,
+                title: t("tui.tool.read", { path: pathFormatter.format(filePath) }),
                 body: (
                   <Show when={filePath}>
                     <box paddingLeft={1}>
-                      <text fg={theme.textMuted}>{"Path: " + pathFormatter.format(filePath)}</text>
+                      <text fg={theme.textMuted}>
+                        {t("tui.common.path")}: {pathFormatter.format(filePath)}
+                      </text>
                     </box>
                   </Show>
                 ),
@@ -231,11 +233,13 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const pattern = typeof data.pattern === "string" ? data.pattern : ""
               return {
                 icon: "✱",
-                title: `Glob "${pattern}"`,
+                title: t("tui.tool.glob", { pattern }),
                 body: (
                   <Show when={pattern}>
                     <box paddingLeft={1}>
-                      <text fg={theme.textMuted}>{"Pattern: " + pattern}</text>
+                      <text fg={theme.textMuted}>
+                        {t("tui.common.pattern")}: {pattern}
+                      </text>
                     </box>
                   </Show>
                 ),
@@ -246,11 +250,13 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const pattern = typeof data.pattern === "string" ? data.pattern : ""
               return {
                 icon: "✱",
-                title: `Grep "${pattern}"`,
+                title: t("tui.tool.grep", { pattern }),
                 body: (
                   <Show when={pattern}>
                     <box paddingLeft={1}>
-                      <text fg={theme.textMuted}>{"Pattern: " + pattern}</text>
+                      <text fg={theme.textMuted}>
+                        {t("tui.common.pattern")}: {pattern}
+                      </text>
                     </box>
                   </Show>
                 ),
@@ -262,11 +268,13 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const dir = typeof raw === "string" ? raw : ""
               return {
                 icon: "→",
-                title: `List ${pathFormatter.format(dir)}`,
+                title: t("tui.tool.list", { path: pathFormatter.format(dir) }),
                 body: (
                   <Show when={dir}>
                     <box paddingLeft={1}>
-                      <text fg={theme.textMuted}>{"Path: " + pathFormatter.format(dir)}</text>
+                      <text fg={theme.textMuted}>
+                        {t("tui.common.path")}: {pathFormatter.format(dir)}
+                      </text>
                     </box>
                   </Show>
                 ),
@@ -275,7 +283,9 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
 
             if (permission === ShellID.ToolID) {
               const title =
-                typeof data.description === "string" && data.description ? data.description : "Shell command"
+                typeof data.description === "string" && data.description
+                  ? data.description
+                  : t("tui.tool.shell_command")
               const command = typeof data.command === "string" ? data.command : ""
               return {
                 icon: "#",
@@ -291,11 +301,11 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
             }
 
             if (permission === "task") {
-              const type = typeof data.subagent_type === "string" ? data.subagent_type : "Unknown"
+              const type = typeof data.subagent_type === "string" ? data.subagent_type : t("tui.tool.task_unknown")
               const desc = typeof data.description === "string" ? data.description : ""
               return {
                 icon: "#",
-                title: `${Locale.titlecase(type)} Task`,
+                title: t("tui.tool.task_title", { type: Locale.titlecase(type) }),
                 body: (
                   <Show when={desc}>
                     <box paddingLeft={1}>
@@ -310,11 +320,13 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const url = typeof data.url === "string" ? data.url : ""
               return {
                 icon: "%",
-                title: `WebFetch ${url}`,
+                title: t("tui.tool.webfetch", { url }),
                 body: (
                   <Show when={url}>
                     <box paddingLeft={1}>
-                      <text fg={theme.textMuted}>{"URL: " + url}</text>
+                      <text fg={theme.textMuted}>
+                        {t("tui.common.url")}: {url}
+                      </text>
                     </box>
                   </Show>
                 ),
@@ -325,11 +337,13 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               const query = typeof data.query === "string" ? data.query : ""
               return {
                 icon: "◈",
-                title: `${webSearchProviderLabel(data.provider)} "${query}"`,
+                title: `${webSearchProviderLabel(data.provider)} ${t("tui.tool.websearch", { query })}`,
                 body: (
                   <Show when={query}>
                     <box paddingLeft={1}>
-                      <text fg={theme.textMuted}>{"Query: " + query}</text>
+                      <text fg={theme.textMuted}>
+                        {t("tui.common.query")}: {query}
+                      </text>
                     </box>
                   </Show>
                 ),
@@ -469,7 +483,12 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
       },
     ],
     bindings: [
-      { key: "escape", desc: t("tui.permission.cancel_rejection"), group: t("tui.cat.permission"), cmd: () => props.onCancel() },
+      {
+        key: "escape",
+        desc: t("tui.permission.cancel_rejection"),
+        group: t("tui.cat.permission"),
+        cmd: () => props.onCancel(),
+      },
       ...tuiConfig.keybinds.get("app.exit"),
       {
         key: "return",
@@ -511,7 +530,7 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
         <textarea
           ref={(val: TextareaRenderable) => {
             input = val
-            val.traits = { status: "REJECT" }
+            val.traits = { status: t("tui.permission.reject_permission") }
           }}
           focused
           textColor={theme.text}

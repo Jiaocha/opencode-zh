@@ -7,6 +7,7 @@ import { useToast } from "./toast"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import * as Selection from "@tui/util/selection"
 import { useBindings } from "../keymap"
+import { t } from "@/i18n"
 
 export function Dialog(
   props: ParentProps<{
@@ -97,8 +98,8 @@ function init() {
     bindings: [
       {
         key: "escape",
-        desc: "Close dialog",
-        group: "Dialog",
+        desc: t("tui.dialog.close"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           if (renderer.getSelection()) {
             renderer.clearSelection()
@@ -111,8 +112,8 @@ function init() {
       },
       {
         key: "ctrl+c",
-        desc: "Close dialog",
-        group: "Dialog",
+        desc: t("tui.dialog.close"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           if (renderer.getSelection()) {
             renderer.clearSelection()

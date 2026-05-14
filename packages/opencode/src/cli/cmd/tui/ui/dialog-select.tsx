@@ -368,7 +368,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
               focusedTextColor={theme.textMuted}
               ref={(r) => {
                 input = r
-                input.traits = { status: "FILTER" }
+                input.traits = { status: t("tui.common.search") }
                 setTimeout(() => {
                   if (!input) return
                   if (input.isDestroyed) return

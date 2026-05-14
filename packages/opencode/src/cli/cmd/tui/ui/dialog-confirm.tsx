@@ -3,8 +3,8 @@ import { useTheme } from "../context/theme"
 import { useDialog, type DialogContext } from "./dialog"
 import { createStore } from "solid-js/store"
 import { For } from "solid-js"
-import { Locale } from "@/util/locale"
 import { useBindings } from "../keymap"
+import { t } from "@/i18n"
 
 export type DialogConfirmProps = {
   title: string
@@ -27,8 +27,8 @@ export function DialogConfirm(props: DialogConfirmProps) {
     bindings: [
       {
         key: "return",
-        desc: "Confirm dialog selection",
-        group: "Dialog",
+        desc: t("tui.dialog.confirm_selection"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           if (store.active === "confirm") props.onConfirm?.()
           if (store.active === "cancel") props.onCancel?.()
@@ -37,16 +37,16 @@ export function DialogConfirm(props: DialogConfirmProps) {
       },
       {
         key: "left",
-        desc: "Previous dialog option",
-        group: "Dialog",
+        desc: t("tui.dialog.previous_option"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           setStore("active", store.active === "confirm" ? "cancel" : "confirm")
         },
       },
       {
         key: "right",
-        desc: "Next dialog option",
-        group: "Dialog",
+        desc: t("tui.dialog.next_option"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           setStore("active", store.active === "confirm" ? "cancel" : "confirm")
         },
@@ -80,7 +80,7 @@ export function DialogConfirm(props: DialogConfirmProps) {
               }}
             >
               <text fg={key === store.active ? theme.selectedListItemText : theme.textMuted}>
-                {Locale.titlecase(key === "cancel" ? (props.label ?? key) : key)}
+                {key === "cancel" ? (props.label ?? t("tui.common.cancel")) : t("tui.common.confirm")}
               </text>
             </box>
           )}

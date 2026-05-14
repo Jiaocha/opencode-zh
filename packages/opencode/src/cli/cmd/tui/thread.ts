@@ -135,7 +135,7 @@ export const TuiThreadCommand = cmd({
       try {
         process.chdir(next)
       } catch {
-        UI.error(t("tui.cmd.tui.chdir_failed", { dir: next }))
+        UI.error(t("tui.error.failed_chdir", { path: next }))
         return
       }
       const cwd = Filesystem.resolve(process.cwd())

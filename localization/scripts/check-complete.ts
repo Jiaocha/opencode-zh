@@ -13,6 +13,60 @@ const hasHan = (value: string) => /[\u3400-\u9fff]/.test(value)
 const allowedSameWebValue = (value: string) =>
   /^(opencode|OpenCode|Discord|GitHub|VS Code|API|URL|LLM|TUI|LSP|MCP)$/i.test(value.trim())
 
+const allowedTuiLiteral = (value: string) => {
+  const text = value.trim()
+  if (!text) return true
+  if (hasHan(text)) return true
+  if (
+    /^(opencode|OpenCode|OpenCode Default|Discord|GitHub|GitLab|VS Code|API|URL|LLM|TUI|LSP|MCP|JSON|OAuth|ChatGPT|Copilot)$/i.test(
+      text,
+    )
+  ) {
+    return true
+  }
+  if (/^[A-Z0-9_/-]{1,12}$/.test(text)) return true
+  if (/^[@./~:[\]\w-]+$/.test(text)) return true
+  if (/^\$\{(t|webSearchProviderLabel)\(/.test(text)) return true
+  if (/^(JSON\.stringify|Array\.from)\(/.test(text)) return true
+  return false
+}
+
+const collectUserFacingTuiLiterals = (content: string) => {
+  const matches: string[] = []
+  const lines = content.split(/\r?\n/)
+  const patterns = [
+    /\b(title|category|description|placeholder|message|label|text|desc|group|pending|complete):\s*["'`]([^"'`]*[A-Za-z][^"'`]*)["'`]/g,
+    /\b(title|placeholder|aria-label|pending)=["'`]([^"'`]*[A-Za-z][^"'`]*)["'`]/g,
+    /traits\s*=\s*\{\s*status:\s*["'`]([^"'`]*[A-Za-z][^"'`]*)["'`]/g,
+    />\s*([A-Z][A-Za-z0-9 ,:;.!?()'/-]{2,})(?:\s*\{|<)/g,
+  ]
+
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index]
+    for (const pattern of patterns) {
+      pattern.lastIndex = 0
+      let match: RegExpExecArray | null
+      while ((match = pattern.exec(line))) {
+        const text = match[2] ?? match[1]
+        if (!allowedTuiLiteral(text)) matches.push(`line ${index + 1}: ${text.trim()}`)
+      }
+    }
+
+    const trimmed = line.trim()
+    const previous = lines[index - 1] ?? ""
+    const next = lines[index + 1] ?? ""
+    if (
+      /^[A-Z][A-Za-z0-9 ,:;.!?()'/-]{2,}$/.test(trimmed) &&
+      (previous.includes("<text") || next.includes("</text>")) &&
+      !allowedTuiLiteral(trimmed)
+    ) {
+      matches.push(`line ${index + 1}: ${trimmed}`)
+    }
+  }
+
+  return matches
+}
+
 const findRepo = async (cwd: string) => {
   const dirs = [cwd, path.join(cwd, ".."), path.join(cwd, "../..")]
   for (const dir of dirs) {
@@ -51,6 +105,8 @@ async function main() {
 
   const manifestPath = path.join(loc, "generated/manifest.json")
   const missingPath = path.join(loc, "generated/missing-keys.json")
+  const cliDictPath = path.join(loc, "dictionaries/zh-CN/cli.json")
+  const tuiDictPath = path.join(loc, "dictionaries/zh-CN/tui.json")
   const i18nEntry = path.join(repo, "packages/opencode/src/i18n/index.ts")
   const i18nDict = path.join(repo, "packages/opencode/src/i18n/zh-cn.ts")
   const webEn = path.join(repo, "packages/web/src/content/i18n/en.json")
@@ -126,6 +182,13 @@ async function main() {
     if (noHanDocs.length > 0) failures.push(`中文文档缺少中文字符: ${noHanDocs.join(", ")}`)
   }
 
+  const localizedKeys = new Set<string>()
+  for (const file of [cliDictPath, tuiDictPath]) {
+    if (!(await exists(file))) continue
+    const dict = await readJson<Record<string, unknown>>(file)
+    for (const key of Object.keys(dict)) localizedKeys.add(key)
+  }
+
   const tuiRoot = path.join(repo, "packages/opencode/src/cli/cmd/tui")
   if (await exists(tuiRoot)) {
     const blockedTuiPhrases = [
@@ -178,20 +241,57 @@ async function main() {
       "Session done",
       "Question needs input",
       "Permission needs input",
+      'title="Autocomplete"',
+      'title="Themes"',
+      "Export Options",
+      "Next export option",
+      "Toggle export option",
+      "Enter filename",
+      "File Changes Found",
+      "Do you want to apply these changes after warping?",
+      "Back to session",
+      "Fork session",
+      "Asking questions...",
+      "Session not found",
+      "Delegating...",
+      "Error [",
+      "Error {",
+      "# Wrote",
+      "# Deleted",
+      "# Created",
+      "# Moved",
+      "Patched ",
+      "Loaded ",
+      'status: "FILTER"',
+      'status: "FILENAME"',
+      'status: "REJECT"',
+      'status: "ANSWER"',
       "[Pasted ~",
       "[Image ",
       "● Tip",
     ]
     const matches: string[] = []
+    const missingTKeys: string[] = []
     for (const file of await listSourceFiles(tuiRoot)) {
       const content = await fs.readFile(file, "utf8")
+      const relative = path.relative(repo, file).replaceAll("\\", "/")
       for (const phrase of blockedTuiPhrases) {
         if (!content.includes(phrase)) continue
-        matches.push(`${path.relative(repo, file).replaceAll("\\", "/")}: ${phrase}`)
+        matches.push(`${relative}: ${phrase}`)
+      }
+      for (const literal of collectUserFacingTuiLiterals(content)) {
+        matches.push(`${relative}: ${literal}`)
+      }
+      for (const match of content.matchAll(/\bt\(\s*["']((?:cli|tui)\.[^"']+)["']/g)) {
+        const key = match[1]
+        if (!localizedKeys.has(key)) missingTKeys.push(`${relative}: ${key}`)
       }
     }
     if (matches.length > 0) {
       failures.push(`TUI 仍存在重点英文漏译 ${matches.length} 处: ${matches.slice(0, 30).join("; ")}`)
+    }
+    if (missingTKeys.length > 0) {
+      failures.push(`TUI 引用了 ${missingTKeys.length} 个未定义汉化键: ${missingTKeys.slice(0, 30).join("; ")}`)
     }
   }
 

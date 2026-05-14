@@ -18,8 +18,8 @@ export function DialogAlert(props: DialogAlertProps) {
     bindings: [
       {
         key: "return",
-        desc: "Confirm alert",
-        group: "Dialog",
+        desc: t("tui.dialog.confirm_alert"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           props.onConfirm?.()
           dialog.clear()

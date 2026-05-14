@@ -893,8 +893,8 @@ export function Prompt(props: PromptProps) {
       bindings: [
         {
           key: "!",
-          desc: "Shell mode",
-          group: "Prompt",
+          desc: t("tui.prompt.shell_mode"),
+          group: t("tui.cat.prompt"),
           cmd: () => {
             setStore("placeholder", randomIndex(shell().length))
             setStore("mode", "shell")

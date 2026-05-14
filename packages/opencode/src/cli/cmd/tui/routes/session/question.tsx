@@ -226,8 +226,18 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
           group: t("tui.question.title"),
           cmd: () => selectTab((store.tab - 1 + tabs()) % tabs()),
         },
-        { key: "right", desc: t("tui.question.next_question"), group: t("tui.question.title"), cmd: () => selectTab((store.tab + 1) % tabs()) },
-        { key: "l", desc: t("tui.question.next_question"), group: t("tui.question.title"), cmd: () => selectTab((store.tab + 1) % tabs()) },
+        {
+          key: "right",
+          desc: t("tui.question.next_question"),
+          group: t("tui.question.title"),
+          cmd: () => selectTab((store.tab + 1) % tabs()),
+        },
+        {
+          key: "l",
+          desc: t("tui.question.next_question"),
+          group: t("tui.question.title"),
+          cmd: () => selectTab((store.tab + 1) % tabs()),
+        },
         {
           key: t("tui.common.tab"),
           desc: t("tui.question.next_question"),
@@ -238,8 +248,18 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
         },
         ...(confirm()
           ? [
-              { key: "return", desc: t("tui.question.submit_answer"), group: t("tui.question.title"), cmd: () => submit() },
-              { key: "escape", desc: t("tui.question.reject_question"), group: t("tui.question.title"), cmd: () => reject() },
+              {
+                key: "return",
+                desc: t("tui.question.submit_answer"),
+                group: t("tui.question.title"),
+                cmd: () => submit(),
+              },
+              {
+                key: "escape",
+                desc: t("tui.question.reject_question"),
+                group: t("tui.question.title"),
+                cmd: () => reject(),
+              },
               ...tuiConfig.keybinds.get("app.exit"),
             ]
           : [
@@ -264,10 +284,30 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
                 group: t("tui.question.title"),
                 cmd: () => moveTo((store.selected - 1 + total) % total),
               },
-              { key: "down", desc: t("tui.question.next_answer"), group: t("tui.question.title"), cmd: () => moveTo((store.selected + 1) % total) },
-              { key: "j", desc: t("tui.question.next_answer"), group: t("tui.question.title"), cmd: () => moveTo((store.selected + 1) % total) },
-              { key: "return", desc: t("tui.question.select_answer", { index: store.selected + 1 }), group: t("tui.question.title"), cmd: () => selectOption() },
-              { key: "escape", desc: t("tui.question.reject_question"), group: t("tui.question.title"), cmd: () => reject() },
+              {
+                key: "down",
+                desc: t("tui.question.next_answer"),
+                group: t("tui.question.title"),
+                cmd: () => moveTo((store.selected + 1) % total),
+              },
+              {
+                key: "j",
+                desc: t("tui.question.next_answer"),
+                group: t("tui.question.title"),
+                cmd: () => moveTo((store.selected + 1) % total),
+              },
+              {
+                key: "return",
+                desc: t("tui.question.select_answer", { index: store.selected + 1 }),
+                group: t("tui.question.title"),
+                cmd: () => selectOption(),
+              },
+              {
+                key: "escape",
+                desc: t("tui.question.reject_question"),
+                group: t("tui.question.title"),
+                cmd: () => reject(),
+              },
               ...tuiConfig.keybinds.get("app.exit"),
             ]),
       ],
@@ -330,7 +370,9 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
               onMouseOut={() => setTabHover(null)}
               onMouseUp={() => selectTab(questions().length)}
             >
-              <text fg={confirm() ? selectedForeground(theme, theme.accent) : theme.textMuted}>{t("tui.common.confirm")}</text>
+              <text fg={confirm() ? selectedForeground(theme, theme.accent) : theme.textMuted}>
+                {t("tui.common.confirm")}
+              </text>
             </box>
           </box>
         </Show>
@@ -406,7 +448,7 @@ export function QuestionPrompt(props: { request: QuestionRequest }) {
                       <textarea
                         ref={(val: TextareaRenderable) => {
                           textarea = val
-                          val.traits = { status: "ANSWER" }
+                          val.traits = { status: t("tui.question.custom_answer") }
                           queueMicrotask(() => {
                             val.focus()
                             val.gotoLineEnd()

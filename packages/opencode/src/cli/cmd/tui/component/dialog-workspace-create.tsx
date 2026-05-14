@@ -11,6 +11,7 @@ import { useSDK } from "../context/sdk"
 import { useToast } from "../ui/toast"
 import { DialogAlert } from "../ui/dialog-alert"
 import { DialogWorkspaceFileChanges } from "./dialog-workspace-file-changes"
+import { workspaceTypeLabel } from "./workspace-label"
 
 type Adapter = {
   type: string
@@ -110,11 +111,7 @@ export async function warpWorkspaceSession(input: {
     .catch(() => undefined)
   if (!result?.data) {
     if (result?.error?.name === "VcsApplyError") {
-      await DialogAlert.show(
-        input.dialog,
-        t("tui.workspace.unable_warp_title"),
-        t("tui.workspace.unable_warp_message"),
-      )
+      await DialogAlert.show(input.dialog, t("tui.workspace.unable_warp_title"), t("tui.workspace.unable_warp_message"))
       return false
     }
 
@@ -216,7 +213,7 @@ export function DialogWorkspaceSelect(props: {
       },
       ...recent.map((workspace: Workspace) => ({
         title: workspace.name,
-        description: `(${workspace.type})`,
+        description: t("tui.workspace.type_label", { type: workspaceTypeLabel(workspace.type) }),
         value: {
           type: "existing" as const,
           workspaceID: workspace.id,
@@ -281,7 +278,7 @@ function DialogExistingWorkspaceSelect(props: {
       .filter((workspace) => workspace.id !== props.omitWorkspaceID)
       .map((workspace: Workspace) => ({
         title: workspace.name,
-        description: `(${workspace.type})`,
+        description: t("tui.workspace.type_label", { type: workspaceTypeLabel(workspace.type) }),
         value: { workspace },
       })),
   )

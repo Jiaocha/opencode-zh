@@ -38,8 +38,8 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
     bindings: [
       {
         key: t("tui.common.tab"),
-        desc: "Next export option",
-        group: "Dialog",
+        desc: t("tui.export.next_option"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           const order: Array<"filename" | "thinking" | "toolDetails" | "assistantMetadata" | "openWithoutSaving"> = [
             "filename",
@@ -61,8 +61,8 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
     bindings: [
       {
         key: "space",
-        desc: "Toggle export option",
-        group: "Dialog",
+        desc: t("tui.export.toggle_option"),
+        group: t("tui.cat.dialog"),
         cmd: () => {
           if (store.active === "thinking") setStore("thinking", !store.thinking)
           if (store.active === "toolDetails") setStore("toolDetails", !store.toolDetails)
@@ -86,7 +86,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
     <box paddingLeft={2} paddingRight={2} gap={1}>
       <box flexDirection="row" justifyContent="space-between">
         <text attributes={TextAttributes.BOLD} fg={theme.text}>
-          Export Options
+          {t("tui.export.title")}
         </text>
         <text fg={theme.textMuted} onMouseUp={() => dialog.clear()}>
           esc
@@ -109,10 +109,10 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           height={3}
           ref={(val: TextareaRenderable) => {
             textarea = val
-            val.traits = { status: "FILENAME" }
+            val.traits = { status: t("tui.export.filename") }
           }}
           initialValue={props.defaultFilename}
-          placeholder="Enter filename"
+          placeholder={t("tui.export.enter_filename")}
           placeholderColor={theme.textMuted}
           textColor={theme.text}
           focusedTextColor={theme.text}
@@ -142,7 +142,9 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "toolDetails" ? theme.primary : theme.textMuted}>
             {store.toolDetails ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "toolDetails" ? theme.primary : theme.text}>{t("tui.export.include_tool_details")}</text>
+          <text fg={store.active === "toolDetails" ? theme.primary : theme.text}>
+            {t("tui.export.include_tool_details")}
+          </text>
         </box>
         <box
           flexDirection="row"
@@ -154,7 +156,9 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "assistantMetadata" ? theme.primary : theme.textMuted}>
             {store.assistantMetadata ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "assistantMetadata" ? theme.primary : theme.text}>{t("tui.export.include_assistant_metadata")}</text>
+          <text fg={store.active === "assistantMetadata" ? theme.primary : theme.text}>
+            {t("tui.export.include_assistant_metadata")}
+          </text>
         </box>
         <box
           flexDirection="row"
@@ -166,7 +170,9 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "openWithoutSaving" ? theme.primary : theme.textMuted}>
             {store.openWithoutSaving ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "openWithoutSaving" ? theme.primary : theme.text}>{t("tui.export.open_without_saving")}</text>
+          <text fg={store.active === "openWithoutSaving" ? theme.primary : theme.text}>
+            {t("tui.export.open_without_saving")}
+          </text>
         </box>
       </box>
       <Show when={store.active !== "filename"}>
