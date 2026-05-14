@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createStore } from "solid-js/store"
 import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js"
 import { Portal, useRenderer, useTerminalDimensions, type JSX } from "@opentui/solid"
@@ -84,7 +85,7 @@ function EditBody(props: { request: PermissionRequest }) {
       </Show>
       <Show when={!diff()}>
         <box paddingLeft={1}>
-          <text fg={theme.textMuted}>No diff provided</text>
+          <text fg={theme.textMuted}>{t("tui.permission.no_diff_provided")}</text>
         </box>
       </Show>
     </box>
@@ -141,15 +142,17 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
     <Switch>
       <Match when={store.stage === "always"}>
         <Prompt
-          title="Always allow"
+          title={t("tui.permission.always_allow")}
           body={
             <Switch>
               <Match when={props.request.always.length === 1 && props.request.always[0] === "*"}>
-                <TextBody title={"This will allow " + props.request.permission + " until OpenCode is restarted."} />
+                <TextBody
+                  title={t("tui.permission.allow_until_restart_single", { permission: props.request.permission })}
+                />
               </Match>
               <Match when={true}>
                 <box paddingLeft={1} gap={1}>
-                  <text fg={theme.textMuted}>This will allow the following patterns until OpenCode is restarted</text>
+                  <text fg={theme.textMuted}>{t("tui.permission.allow_until_restart_patterns")}</text>
                   <box>
                     <For each={props.request.always}>
                       {(pattern) => (
@@ -164,7 +167,7 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
               </Match>
             </Switch>
           }
-          options={{ confirm: "Confirm", cancel: "Cancel" }}
+          options={{ confirm: t("tui.common.confirm"), cancel: t("tui.common.cancel") }}
           escapeKey="cancel"
           onSelect={(option) => {
             setStore("stage", "permission")
@@ -347,11 +350,11 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
 
               return {
                 icon: "←",
-                title: `Access external directory ${dir}`,
+                title: t("tui.permission.access_external_directory", { dir }),
                 body: (
                   <Show when={patterns.length > 0}>
                     <box paddingLeft={1} gap={1}>
-                      <text fg={theme.textMuted}>Patterns</text>
+                      <text fg={theme.textMuted}>{t("tui.permission.patterns")}</text>
                       <box>
                         <For each={patterns}>{(p) => <text fg={theme.text}>{"- " + p}</text>}</For>
                       </box>
@@ -364,10 +367,10 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
             if (permission === "doom_loop") {
               return {
                 icon: "⟳",
-                title: "Continue after repeated failures",
+                title: t("tui.permission.continue_after_failure"),
                 body: (
                   <box paddingLeft={1}>
-                    <text fg={theme.textMuted}>This keeps the session running despite repeated failures.</text>
+                    <text fg={theme.textMuted}>{t("tui.permission.continue_after_failure_desc")}</text>
                   </box>
                 ),
               }
@@ -375,10 +378,10 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
 
             return {
               icon: "⚙",
-              title: `Call tool ${permission}`,
+              title: t("tui.permission.call_tool", { tool: permission }),
               body: (
                 <box paddingLeft={1}>
-                  <text fg={theme.textMuted}>{"Tool: " + permission}</text>
+                  <text fg={theme.textMuted}>{t("tui.common.tool") + ": " + permission}</text>
                 </box>
               ),
             }
@@ -390,7 +393,7 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
             <box flexDirection="column" gap={0}>
               <box flexDirection="row" gap={1} flexShrink={0}>
                 <text fg={theme.warning}>{"△"}</text>
-                <text fg={theme.text}>Permission required</text>
+                <text fg={theme.text}>{t("tui.permission.required_title")}</text>
               </box>
               <box flexDirection="row" gap={1} paddingLeft={2} flexShrink={0}>
                 <text fg={theme.textMuted} flexShrink={0}>
@@ -403,10 +406,14 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
 
           const body = (
             <Prompt
-              title="Permission required"
+              title={t("tui.permission.required_title")}
               header={header()}
               body={current.body}
-              options={{ once: "Allow once", always: "Allow always", reject: "Reject" }}
+              options={{
+                once: t("tui.permission.allow_once"),
+                always: t("tui.permission.allow_always"),
+                reject: t("tui.common.reject"),
+              }}
               escapeKey="reject"
               fullscreen
               onSelect={(option) => {
@@ -454,20 +461,20 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
     commands: [
       {
         name: "app.exit",
-        title: "Cancel permission rejection",
-        category: "Permission",
+        title: t("tui.permission.cancel_rejection"),
+        category: t("tui.cat.permission"),
         run() {
           props.onCancel()
         },
       },
     ],
     bindings: [
-      { key: "escape", desc: "Cancel permission rejection", group: "Permission", cmd: () => props.onCancel() },
+      { key: "escape", desc: t("tui.permission.cancel_rejection"), group: t("tui.cat.permission"), cmd: () => props.onCancel() },
       ...tuiConfig.keybinds.get("app.exit"),
       {
         key: "return",
-        desc: "Confirm permission rejection",
-        group: "Permission",
+        desc: t("tui.permission.confirm_rejection"),
+        group: t("tui.cat.permission"),
         cmd: () => props.onConfirm(input.plainText),
       },
     ],
@@ -483,10 +490,10 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
       <box gap={1} paddingLeft={1} paddingRight={3} paddingTop={1} paddingBottom={1}>
         <box flexDirection="row" gap={1} paddingLeft={1}>
           <text fg={theme.error}>{"△"}</text>
-          <text fg={theme.text}>Reject permission</text>
+          <text fg={theme.text}>{t("tui.permission.reject_permission")}</text>
         </box>
         <box paddingLeft={1}>
-          <text fg={theme.textMuted}>Tell OpenCode what to do differently</text>
+          <text fg={theme.textMuted}>{t("tui.permission.tell_what_to_do")}</text>
         </box>
       </box>
       <box
@@ -513,10 +520,10 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
         />
         <box flexDirection="row" gap={2} flexShrink={0}>
           <text fg={theme.text}>
-            enter <span style={{ fg: theme.textMuted }}>confirm</span>
+            enter <span style={{ fg: theme.textMuted }}>{t("tui.common.confirm")}</span>
           </text>
           <text fg={theme.text}>
-            esc <span style={{ fg: theme.textMuted }}>cancel</span>
+            esc <span style={{ fg: theme.textMuted }}>{t("tui.common.cancel")}</span>
           </text>
         </box>
       </box>
@@ -550,8 +557,8 @@ function Prompt<const T extends Record<string, string>>(props: {
     commands: [
       {
         name: "app.exit",
-        title: "Reject permission",
-        category: "Permission",
+        title: t("tui.permission.reject_permission"),
+        category: t("tui.cat.permission"),
         run() {
           if (!props.escapeKey) return
           props.onSelect(props.escapeKey)
@@ -559,8 +566,8 @@ function Prompt<const T extends Record<string, string>>(props: {
       },
       {
         name: "permission.prompt.fullscreen",
-        title: "Toggle permission fullscreen",
-        category: "Permission",
+        title: t("tui.permission.toggle_fullscreen"),
+        category: t("tui.cat.permission"),
         run() {
           if (!props.fullscreen) return
           setStore("expanded", (v) => !v)
@@ -570,8 +577,8 @@ function Prompt<const T extends Record<string, string>>(props: {
     bindings: [
       {
         key: "left",
-        desc: "Previous permission option",
-        group: "Permission",
+        desc: t("tui.permission.previous_option"),
+        group: t("tui.cat.permission"),
         cmd: () => {
           const idx = keys.indexOf(store.selected)
           const next = keys[(idx - 1 + keys.length) % keys.length]
@@ -580,8 +587,8 @@ function Prompt<const T extends Record<string, string>>(props: {
       },
       {
         key: "h",
-        desc: "Previous permission option",
-        group: "Permission",
+        desc: t("tui.permission.previous_option"),
+        group: t("tui.cat.permission"),
         cmd: () => {
           const idx = keys.indexOf(store.selected)
           const next = keys[(idx - 1 + keys.length) % keys.length]
@@ -590,8 +597,8 @@ function Prompt<const T extends Record<string, string>>(props: {
       },
       {
         key: "right",
-        desc: "Next permission option",
-        group: "Permission",
+        desc: t("tui.permission.next_option"),
+        group: t("tui.cat.permission"),
         cmd: () => {
           const idx = keys.indexOf(store.selected)
           const next = keys[(idx + 1) % keys.length]
@@ -600,8 +607,8 @@ function Prompt<const T extends Record<string, string>>(props: {
       },
       {
         key: "l",
-        desc: "Next permission option",
-        group: "Permission",
+        desc: t("tui.permission.next_option"),
+        group: t("tui.cat.permission"),
         cmd: () => {
           const idx = keys.indexOf(store.selected)
           const next = keys[(idx + 1) % keys.length]
@@ -610,16 +617,16 @@ function Prompt<const T extends Record<string, string>>(props: {
       },
       {
         key: "return",
-        desc: "Select permission option",
-        group: "Permission",
+        desc: t("tui.permission.select_option"),
+        group: t("tui.cat.permission"),
         cmd: () => props.onSelect(store.selected),
       },
       ...(props.escapeKey
         ? [
             {
               key: "escape",
-              desc: "Reject permission",
-              group: "Permission",
+              desc: t("tui.permission.reject_permission"),
+              group: t("tui.cat.permission"),
               cmd: () => props.onSelect(props.escapeKey!),
             },
           ]
@@ -629,7 +636,7 @@ function Prompt<const T extends Record<string, string>>(props: {
     ],
   }))
 
-  const hint = createMemo(() => (store.expanded ? "minimize" : "fullscreen"))
+  const hint = createMemo(() => (store.expanded ? t("tui.common.minimize") : t("tui.common.fullscreen")))
   useRenderer()
 
   const content = () => (
@@ -704,10 +711,10 @@ function Prompt<const T extends Record<string, string>>(props: {
             </text>
           </Show>
           <text fg={theme.text}>
-            {"⇆"} <span style={{ fg: theme.textMuted }}>select</span>
+            {"⇆"} <span style={{ fg: theme.textMuted }}>{t("tui.help.select")}</span>
           </text>
           <text fg={theme.text}>
-            enter <span style={{ fg: theme.textMuted }}>confirm</span>
+            enter <span style={{ fg: theme.textMuted }}>{t("tui.common.confirm")}</span>
           </text>
         </box>
       </box>

@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createStore } from "solid-js/store"
 import { createSimpleContext } from "./helper"
 import { batch, createEffect, createMemo, on } from "solid-js"
@@ -71,7 +72,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (!agents().some((x) => x.name === name))
             return toast.show({
               variant: "warning",
-              message: `Agent not found: ${name}`,
+              message: t("tui.agent.not_found", { name }),
               duration: 3000,
             })
           setAgentStore("current", name)
@@ -259,7 +260,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (!favorites.length) {
             toast.show({
               variant: "info",
-              message: "Add a favorite model to use this shortcut",
+              message: t("tui.model.add_favorite_required"),
               duration: 3000,
             })
             return
@@ -293,7 +294,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           batch(() => {
             if (!isModelValid(model)) {
               toast.show({
-                message: `Model ${model.providerID}/${model.modelID} is not valid`,
+                message: t("tui.model.invalid", { model: `${model.providerID}/${model.modelID}` }),
                 variant: "warning",
                 duration: 3000,
               })
@@ -317,7 +318,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           batch(() => {
             if (!isModelValid(model)) {
               toast.show({
-                message: `Model ${model.providerID}/${model.modelID} is not valid`,
+                message: t("tui.model.invalid", { model: `${model.providerID}/${model.modelID}` }),
                 variant: "warning",
                 duration: 3000,
               })
@@ -540,7 +541,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (route.data.type !== "session") {
             toast.show({
               variant: "info",
-              message: "Open a session first to cycle between recent sessions",
+              message: t("tui.session.open_first_recent_cycle"),
               duration: 3000,
             })
             return
@@ -552,7 +553,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           if (order.length < 2) {
             toast.show({
               variant: "info",
-              message: "No other recent sessions to cycle to",
+              message: t("tui.session.no_other_recent_cycle"),
               duration: 3000,
             })
             return

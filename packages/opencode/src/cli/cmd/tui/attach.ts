@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { cmd } from "../cmd"
 import { UI } from "@/cli/ui"
 import { win32DisableProcessedInput, win32InstallCtrlCGuard } from "./win32"
@@ -8,7 +9,7 @@ import { ServerAuth } from "@/server/auth"
 
 export const AttachCommand = cmd({
   command: "attach <url>",
-  describe: "attach to a running opencode server",
+  describe: t("tui.cli.attach_server"),
   builder: (yargs) =>
     yargs
       .positional("url", {
@@ -18,31 +19,31 @@ export const AttachCommand = cmd({
       })
       .option("dir", {
         type: "string",
-        description: "directory to run in",
+        description: t("cli.cmd.run.dir"),
       })
       .option("continue", {
         alias: ["c"],
-        describe: "continue the last session",
+        describe: t("tui.cli.continue_session"),
         type: "boolean",
       })
       .option("session", {
         alias: ["s"],
         type: "string",
-        describe: "session id to continue",
+        describe: t("tui.cli.session_id"),
       })
       .option("fork", {
         type: "boolean",
-        describe: "fork the session when continuing (use with --continue or --session)",
+        describe: t("tui.cli.fork_session"),
       })
       .option("password", {
         alias: ["p"],
         type: "string",
-        describe: "basic auth password (defaults to OPENCODE_SERVER_PASSWORD)",
+        describe: t("tui.cli.auth_password"),
       })
       .option("username", {
         alias: ["u"],
         type: "string",
-        describe: "basic auth username (defaults to OPENCODE_SERVER_USERNAME or 'opencode')",
+        describe: t("tui.cli.auth_username"),
       }),
   handler: async (args) => {
     const unguard = win32InstallCtrlCGuard()
@@ -50,7 +51,7 @@ export const AttachCommand = cmd({
       win32DisableProcessedInput()
 
       if (args.fork && !args.continue && !args.session) {
-        UI.error("--fork requires --continue or --session")
+        UI.error(t("tui.cli.fork_requires_continue"))
         process.exitCode = 1
         return
       }

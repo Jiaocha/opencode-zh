@@ -1,0 +1,14 @@
+{
+  "defaultLocale": "en",
+  "activeLocale": "zh-CN",
+  "fallbackLocale": "en",
+  "targets": ["tui"],
+  "sourceRoot": "packages/opencode/src",
+  "dictionaryRoot": "localization/dictionaries",
+  "generatedRoot": "localization/generated",
+  "keyStyle": "dot.case",
+  "strict": {
+    "missingKey": true,
+    "invalidPlaceholder": true
+  }
+}

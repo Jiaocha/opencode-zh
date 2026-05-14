@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import type { TuiPlugin, TuiPluginApi } from "@opencode-ai/plugin/tui"
 import type { InternalTuiPlugin } from "../../plugin/internal"
 import { useSyncV2 } from "@tui/context/sync-v2"
@@ -147,7 +148,8 @@ function MissingData(props: { label: string; detail: string }) {
       flexShrink={0}
     >
       <text fg={theme.text}>
-        <span style={{ bg: theme.warning, fg: theme.background, bold: true }}> MISSING DATA </span> {props.label}
+        <span style={{ bg: theme.warning, fg: theme.background, bold: true }}> {t("tui.session.missing_data")} </span>{" "}
+        {props.label}
       </text>
       <text fg={theme.textMuted}>{props.detail}</text>
     </box>
@@ -184,7 +186,7 @@ function UserMessage(props: { message: SessionMessageUser; index: number }) {
           <For each={props.message.agents ?? []}>
             {(agent) => (
               <text fg={theme.text}>
-                <span style={{ bg: theme.accent, fg: theme.background }}> agent </span>
+                <span style={{ bg: theme.accent, fg: theme.background }}>{t("cli.cmd.tui.agent")}</span>
                 <span style={{ bg: theme.backgroundElement, fg: theme.textMuted }}> {agent.name} </span>
               </text>
             )}
@@ -217,7 +219,7 @@ function ShellMessage(props: { message: SessionMessageShell }) {
           <text fg={theme.text}>{limited()}</text>
         </Show>
         <Show when={overflow()}>
-          <text fg={theme.textMuted}>{expanded() ? "Click to collapse" : "Click to expand"}</text>
+          <text fg={theme.textMuted}>{expanded() ? t("tui.tool.click_to_collapse") : t("tui.tool.click_to_expand")}</text>
         </Show>
       </box>
     </BlockTool>
@@ -230,7 +232,7 @@ function CompactionMessage(props: { message: SessionMessageCompaction }) {
     <box
       marginTop={1}
       border={["top"]}
-      title={props.message.reason === "auto" ? " Auto Compaction " : " Compaction "}
+      title={props.message.reason === "auto" ? ` ${t("tui.session.auto_compaction")} ` : ` ${t("tui.session.compaction")} `}
       titleAlignment="center"
       borderColor={theme.borderActive}
       flexShrink={0}
@@ -261,7 +263,7 @@ function AgentSwitchedMessage(props: { message: SessionMessageAgentSwitched }) {
     <box paddingLeft={3} marginTop={1} flexShrink={0}>
       <text>
         <span style={{ fg: local.agent.color(props.message.agent) }}>▣ </span>
-        <span style={{ fg: theme.textMuted }}>Switched agent to </span>
+        <span style={{ fg: theme.textMuted }}>{t("tui.session.switched_agent_to")} </span>
         <span style={{ fg: theme.text }}>{Locale.titlecase(props.message.agent)}</span>
       </text>
     </box>
@@ -278,7 +280,7 @@ function ModelSwitchedMessage(props: { message: SessionMessageModelSwitched }) {
     <box paddingLeft={3} marginTop={1} flexShrink={0}>
       <text>
         <span style={{ fg: theme.secondary }}>◇ </span>
-        <span style={{ fg: theme.textMuted }}>Switched model to </span>
+        <span style={{ fg: theme.textMuted }}>{t("tui.session.switched_model_to")} </span>
         <span style={{ fg: theme.text }}>{model()}</span>
       </text>
     </box>
@@ -286,7 +288,7 @@ function ModelSwitchedMessage(props: { message: SessionMessageModelSwitched }) {
 }
 
 function UnknownMessage(props: { message: SessionMessage }) {
-  return <MissingData label="Unknown message type" detail={JSON.stringify(props.message)} />
+  return <MissingData label={t("tui.session.unknown_message_type")} detail={JSON.stringify(props.message)} />
 }
 
 function AssistantMessage(props: {
@@ -1096,8 +1098,8 @@ function todoIcon(status?: string) {
 }
 
 function formatAnswer(answer: unknown) {
-  if (!Array.isArray(answer)) return "(no answer)"
-  if (answer.length === 0) return "(no answer)"
+  if (!Array.isArray(answer)) return t("tui.question.no_answer")
+  if (answer.length === 0) return t("tui.question.no_answer")
   return answer.filter((item): item is string => typeof item === "string").join(", ")
 }
 
@@ -1108,7 +1110,7 @@ const tui: TuiPlugin = async (api) => {
       render(input) {
         const sessionID = input.params?.sessionID
         if (typeof sessionID !== "string") {
-          return <text fg={api.theme.current.error}>Missing sessionID</text>
+          return <text fg={api.theme.current.error}>{t("tui.session.missing_session_id")}</text>
         }
         return <View api={api} sessionID={sessionID} />
       },
@@ -1119,8 +1121,8 @@ const tui: TuiPlugin = async (api) => {
     commands: [
       {
         name: route,
-        title: "View v2 session messages",
-        category: "Debug",
+        title: t("tui.session.view_v2_messages"),
+        category: t("cli.cmd.debug.describe"),
         namespace: "palette",
         suggested: () => api.route.current.name === "session",
         enabled: () => api.route.current.name === "session",

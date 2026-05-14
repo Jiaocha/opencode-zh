@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { TextareaRenderable, TextAttributes } from "@opentui/core"
 import { useTheme } from "../context/theme"
 import { useDialog, type DialogContext } from "./dialog"
@@ -36,7 +37,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
   useBindings(() => ({
     bindings: [
       {
-        key: "tab",
+        key: t("tui.common.tab"),
         desc: "Next export option",
         group: "Dialog",
         cmd: () => {
@@ -93,7 +94,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
       </box>
       <box gap={1}>
         <box>
-          <text fg={theme.text}>Filename:</text>
+          <text fg={theme.text}>{t("tui.export.filename")}</text>
         </box>
         <textarea
           onSubmit={() => {
@@ -129,7 +130,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "thinking" ? theme.primary : theme.textMuted}>
             {store.thinking ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "thinking" ? theme.primary : theme.text}>Include thinking</text>
+          <text fg={store.active === "thinking" ? theme.primary : theme.text}>{t("tui.export.include_thinking")}</text>
         </box>
         <box
           flexDirection="row"
@@ -141,7 +142,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "toolDetails" ? theme.primary : theme.textMuted}>
             {store.toolDetails ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "toolDetails" ? theme.primary : theme.text}>Include tool details</text>
+          <text fg={store.active === "toolDetails" ? theme.primary : theme.text}>{t("tui.export.include_tool_details")}</text>
         </box>
         <box
           flexDirection="row"
@@ -153,7 +154,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "assistantMetadata" ? theme.primary : theme.textMuted}>
             {store.assistantMetadata ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "assistantMetadata" ? theme.primary : theme.text}>Include assistant metadata</text>
+          <text fg={store.active === "assistantMetadata" ? theme.primary : theme.text}>{t("tui.export.include_assistant_metadata")}</text>
         </box>
         <box
           flexDirection="row"
@@ -165,19 +166,21 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           <text fg={store.active === "openWithoutSaving" ? theme.primary : theme.textMuted}>
             {store.openWithoutSaving ? "[x]" : "[ ]"}
           </text>
-          <text fg={store.active === "openWithoutSaving" ? theme.primary : theme.text}>Open without saving</text>
+          <text fg={store.active === "openWithoutSaving" ? theme.primary : theme.text}>{t("tui.export.open_without_saving")}</text>
         </box>
       </box>
       <Show when={store.active !== "filename"}>
         <text fg={theme.textMuted} paddingBottom={1}>
-          Press <span style={{ fg: theme.text }}>space</span> to toggle, <span style={{ fg: theme.text }}>return</span>{" "}
-          to confirm
+          {t("tui.export.press")} <span style={{ fg: theme.text }}>{t("tui.common.space_key")}</span>{" "}
+          {t("tui.export.to_toggle")}, <span style={{ fg: theme.text }}>{t("tui.common.return_key")}</span>{" "}
+          {t("tui.export.to_confirm")}
         </text>
       </Show>
       <Show when={store.active === "filename"}>
         <text fg={theme.textMuted} paddingBottom={1}>
-          Press <span style={{ fg: theme.text }}>return</span> to confirm, <span style={{ fg: theme.text }}>tab</span>{" "}
-          for options
+          {t("tui.export.press")} <span style={{ fg: theme.text }}>{t("tui.common.return_key")}</span>{" "}
+          {t("tui.export.to_confirm")}, <span style={{ fg: theme.text }}>{t("tui.common.tab")}</span>{" "}
+          {t("tui.export.for_options")}
         </text>
       </Show>
     </box>

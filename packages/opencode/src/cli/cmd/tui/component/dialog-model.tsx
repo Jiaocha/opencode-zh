@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createMemo, createSignal } from "solid-js"
 import { useLocal } from "@tui/context/local"
 import { useSync } from "@tui/context/sync"
@@ -158,7 +159,7 @@ export function DialogModel(props: { providerID?: string }) {
         },
         {
           command: "model.dialog.favorite",
-          title: "Favorite",
+          title: t("tui.model.favorite"),
           disabled: !connected(),
           onTrigger: (option) => {
             local.model.toggleFavorite(option.value as { providerID: string; modelID: string })

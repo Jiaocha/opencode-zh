@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { useDialog } from "@tui/ui/dialog"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { createMemo, createSignal } from "solid-js"
@@ -71,7 +72,7 @@ export function DialogStash(props: { onSelect: (entry: StashEntry) => void }) {
       actions={[
         {
           command: "stash.delete",
-          title: "delete",
+          title: t("cli.cmd.session.delete"),
           onTrigger: (option) => {
             if (toDelete() === option.value) {
               stash.remove(option.value)

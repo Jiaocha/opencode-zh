@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { cmd } from "@/cli/cmd/cmd"
 import { Rpc } from "@/util/rpc"
 import { type rpc } from "./worker"
@@ -78,39 +79,39 @@ export function resolveThreadDirectory(project?: string, envPWD = process.env.PW
 
 export const TuiThreadCommand = cmd({
   command: "$0 [project]",
-  describe: "start opencode tui",
+  describe: t("tui.cli.start_tui"),
   builder: (yargs) =>
     withNetworkOptions(yargs)
       .positional("project", {
         type: "string",
-        describe: "path to start opencode in",
+        describe: t("tui.cli.path_to_start"),
       })
       .option("model", {
         type: "string",
         alias: ["m"],
-        describe: "model to use in the format of provider/model",
+        describe: t("tui.cli.model_format"),
       })
       .option("continue", {
         alias: ["c"],
-        describe: "continue the last session",
+        describe: t("tui.cli.continue_session"),
         type: "boolean",
       })
       .option("session", {
         alias: ["s"],
         type: "string",
-        describe: "session id to continue",
+        describe: t("tui.cli.session_id"),
       })
       .option("fork", {
         type: "boolean",
-        describe: "fork the session when continuing (use with --continue or --session)",
+        describe: t("tui.cli.fork_session"),
       })
       .option("prompt", {
         type: "string",
-        describe: "prompt to use",
+        describe: t("tui.cli.prompt_to_use"),
       })
       .option("agent", {
         type: "string",
-        describe: "agent to use",
+        describe: t("tui.cli.agent_to_use"),
       }),
   handler: async (args) => {
     // Keep ENABLE_PROCESSED_INPUT cleared even if other code flips it.
@@ -122,7 +123,7 @@ export const TuiThreadCommand = cmd({
       win32DisableProcessedInput()
 
       if (args.fork && !args.continue && !args.session) {
-        UI.error("--fork requires --continue or --session")
+        UI.error(t("tui.cli.fork_requires_continue"))
         process.exitCode = 1
         return
       }
@@ -134,7 +135,7 @@ export const TuiThreadCommand = cmd({
       try {
         process.chdir(next)
       } catch {
-        UI.error("Failed to change directory to " + next)
+        UI.error(t("tui.cmd.tui.chdir_failed", { dir: next }))
         return
       }
       const cwd = Filesystem.resolve(process.cwd())

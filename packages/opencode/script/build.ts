@@ -51,8 +51,17 @@ const singleFlag = process.argv.includes("--single")
 const baselineFlag = process.argv.includes("--baseline")
 const skipInstall = process.argv.includes("--skip-install")
 const sourcemapsFlag = process.argv.includes("--sourcemaps")
+const archiveFlag = process.argv.includes("--archive")
 const plugin = createSolidTransformPlugin()
 const skipEmbedWebUi = process.argv.includes("--skip-embed-web-ui")
+
+const argValue = (name: string) => {
+  const inline = process.argv.find((item) => item.startsWith(`${name}=`))
+  if (inline) return inline.slice(name.length + 1)
+  const index = process.argv.indexOf(name)
+  if (index === -1) return
+  return process.argv[index + 1]
+}
 
 const createEmbeddedWebUIBundle = async () => {
   console.log(`Building Web UI to embed in the binary`)
@@ -143,26 +152,64 @@ const allTargets: {
   },
 ]
 
-const targets = singleFlag
-  ? allTargets.filter((item) => {
-      if (item.os !== process.platform || item.arch !== process.arch) {
-        return false
-      }
+const targetName = (item: (typeof allTargets)[number]) =>
+  [item.os === "win32" ? "windows" : item.os, item.arch, item.avx2 === false ? "baseline" : undefined, item.abi]
+    .filter(Boolean)
+    .join("-")
 
-      // When building for the current platform, prefer a single native binary by default.
-      // Baseline binaries require additional Bun artifacts and can be flaky to download.
-      if (item.avx2 === false) {
-        return baselineFlag
-      }
+const normalizeTarget = (input: string) => {
+  const value = input.trim().toLowerCase()
+  if (value === "linux-amd64") return "linux-x64"
+  if (value === "linux-arm") return "linux-arm64"
+  if (value === "windows-amd64") return "windows-x64"
+  if (value === "win32-x64") return "windows-x64"
+  return value
+}
 
-      // also skip abi-specific builds for the same reason
-      if (item.abi !== undefined) {
-        return false
-      }
+const targetArg = argValue("--targets") ?? argValue("--target")
+const targets = targetArg
+  ? targetArg
+      .split(",")
+      .map(normalizeTarget)
+      .filter(Boolean)
+      .map((target) => {
+        const match = allTargets.find((item) => targetName(item) === target)
+        if (!match) throw new Error(`Unknown build target: ${target}`)
+        return match
+      })
+  : singleFlag
+    ? allTargets.filter((item) => {
+        if (item.os !== process.platform || item.arch !== process.arch) {
+          return false
+        }
 
-      return true
-    })
-  : allTargets
+        // When building for the current platform, prefer a single native binary by default.
+        // Baseline binaries require additional Bun artifacts and can be flaky to download.
+        if (item.avx2 === false) {
+          return baselineFlag
+        }
+
+        // also skip abi-specific builds for the same reason
+        if (item.abi !== undefined) {
+          return false
+        }
+
+        return true
+      })
+    : allTargets
+
+const createZip = async (key: string) => {
+  const cwd = `dist/${key}/bin`
+  if (process.platform === "win32") {
+    const destination = path.resolve(dir, "dist", `${key}.zip`)
+    await $`powershell -NoProfile -ExecutionPolicy Bypass -Command ${`Compress-Archive -Path * -DestinationPath ${JSON.stringify(destination)} -Force`}`.cwd(
+      cwd,
+    )
+    return
+  }
+
+  await $`zip -r ../../${key}.zip *`.cwd(cwd)
+}
 
 await $`rm -rf dist`
 
@@ -254,15 +301,17 @@ for (const item of targets) {
   binaries[name] = Script.version
 }
 
-if (Script.release) {
+if (Script.release || archiveFlag) {
   for (const key of Object.keys(binaries)) {
     if (key.includes("linux")) {
       await $`tar -czf ../../${key}.tar.gz *`.cwd(`dist/${key}/bin`)
     } else {
-      await $`zip -r ../../${key}.zip *`.cwd(`dist/${key}/bin`)
+      await createZip(key)
     }
   }
-  await $`gh release upload v${Script.version} ./dist/*.zip ./dist/*.tar.gz --clobber --repo ${process.env.GH_REPO}`
+  if (Script.release) {
+    await $`gh release upload v${Script.version} ./dist/*.zip ./dist/*.tar.gz --clobber --repo ${process.env.GH_REPO}`
+  }
 }
 
 export { binaries }

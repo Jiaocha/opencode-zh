@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { TextareaRenderable, TextAttributes } from "@opentui/core"
 import { useTheme } from "../context/theme"
 import { useDialog, type DialogContext } from "./dialog"
@@ -79,9 +80,9 @@ export function DialogPrompt(props: DialogPromptProps) {
         </Show>
       </box>
       <box paddingBottom={1} gap={1} flexDirection="row">
-        <Show when={!props.busy} fallback={<text fg={theme.textMuted}>processing...</text>}>
+        <Show when={!props.busy} fallback={<text fg={theme.textMuted}>{t("tui.common.processing")}</text>}>
           <text fg={theme.text}>
-            enter <span style={{ fg: theme.textMuted }}>submit</span>
+            enter <span style={{ fg: theme.textMuted }}>{t("tui.common.submit")}</span>
           </text>
         </Show>
       </box>

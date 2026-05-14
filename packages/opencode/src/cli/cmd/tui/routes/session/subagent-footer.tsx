@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createMemo, createSignal, Show } from "solid-js"
 import { useRouteData } from "@tui/context/route"
 import { useSync } from "@tui/context/sync"
@@ -17,7 +18,7 @@ export function SubagentFooter() {
 
   const subagentInfo = createMemo(() => {
     const s = session()
-    if (!s) return { label: "Subagent", index: 0, total: 0 }
+    if (!s) return { label: t("tui.session.subagent"), index: 0, total: 0 }
     const agentMatch = s.title.match(/@(\w+) subagent/)
     const label = agentMatch ? Locale.titlecase(agentMatch[1]) : "Subagent"
 

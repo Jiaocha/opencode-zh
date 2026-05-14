@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createResource, createMemo } from "solid-js"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useSDK } from "@tui/context/sdk"
@@ -37,7 +38,7 @@ export function DialogConsoleOrg() {
     if (listed === undefined) {
       return [
         {
-          title: "Loading orgs...",
+          title: t("tui.common.loading_orgs"),
           value: "loading",
           onSelect: () => {},
         },
@@ -47,7 +48,7 @@ export function DialogConsoleOrg() {
     if (listed.length === 0) {
       return [
         {
-          title: "No orgs found",
+          title: t("tui.common.no_orgs"),
           value: "empty",
           onSelect: () => {},
         },
@@ -91,7 +92,7 @@ export function DialogConsoleOrg() {
 
           await sdk.client.instance.dispose()
           toast.show({
-            message: `Switched to ${item.orgName}`,
+            message: t("tui.org.switched_to", { name: item.orgName }),
             variant: "info",
           })
           dialog.clear()
@@ -99,5 +100,5 @@ export function DialogConsoleOrg() {
       }))
   })
 
-  return <DialogSelect<string | OrgOption> title="Switch org" options={options()} current={current()} />
+  return <DialogSelect<string | OrgOption> title={t("tui.cmd.switch_org")} options={options()} current={current()} />
 }

@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import {
   batch,
   createContext,
@@ -442,10 +443,10 @@ export function Session() {
 
   const sessionCommandList = createMemo(() => [
     {
-      title: session()?.share?.url ? "Copy share link" : "Share session",
+      title: session()?.share?.url ? t("tui.session.copy_share_link") : t("tui.session.share_session"),
       value: "session.share",
       suggested: route.type === "session",
-      category: "Session",
+      category: t("tui.cat.session"),
       enabled: sync.data.config.share !== "disabled",
       slash: {
         name: "share",
@@ -453,8 +454,8 @@ export function Session() {
       run: async () => {
         const copy = (url: string) =>
           Clipboard.copy(url)
-            .then(() => toast.show({ message: "Share URL copied to clipboard!", variant: "success" }))
-            .catch(() => toast.show({ message: "Failed to copy URL to clipboard", variant: "error" }))
+            .then(() => toast.show({ message: t("tui.session.share_url_copied"), variant: "success" }))
+            .catch(() => toast.show({ message: t("tui.session.copy_url_failed"), variant: "error" }))
         const url = session()?.share?.url
         if (url) {
           await copy(url)
@@ -462,7 +463,7 @@ export function Session() {
           return
         }
         if (!kv.get("share_consent", false)) {
-          const ok = await DialogConfirm.show(dialog, "Share Session", "Are you sure you want to share it?")
+          const ok = await DialogConfirm.show(dialog, t("tui.session.share_session"), t("tui.session.share_confirm"))
           if (ok !== true) return
           kv.set("share_consent", true)
         }
@@ -473,7 +474,7 @@ export function Session() {
           .then((res) => copy(res.data!.share!.url))
           .catch((error) => {
             toast.show({
-              message: error instanceof Error ? error.message : "Failed to share session",
+              message: error instanceof Error ? error.message : t("tui.session.failed_to_share"),
               variant: "error",
             })
           })
@@ -481,9 +482,9 @@ export function Session() {
       },
     },
     {
-      title: "Rename session",
+      title: t("tui.session.rename_session"),
       value: "session.rename",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "rename",
       },
@@ -492,9 +493,9 @@ export function Session() {
       },
     },
     {
-      title: "Jump to message",
+      title: t("tui.session.jump_to_message"),
       value: "session.timeline",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "timeline",
       },
@@ -514,9 +515,9 @@ export function Session() {
       },
     },
     {
-      title: "Fork session",
+      title: t("tui.cli.fork_session"),
       value: "session.fork",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "fork",
       },
@@ -536,9 +537,9 @@ export function Session() {
       },
     },
     {
-      title: "Compact session",
+      title: t("tui.session.compact_session"),
       value: "session.compact",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "compact",
         aliases: ["summarize"],
@@ -548,7 +549,7 @@ export function Session() {
         if (!selectedModel) {
           toast.show({
             variant: "warning",
-            message: "Connect a provider to summarize this session",
+            message: t("tui.session.connect_provider_to_summarize"),
             duration: 3000,
           })
           return
@@ -562,9 +563,9 @@ export function Session() {
       },
     },
     {
-      title: "Unshare session",
+      title: t("tui.session.unshare_session"),
       value: "session.unshare",
-      category: "Session",
+      category: t("tui.cat.session"),
       enabled: !!session()?.share?.url,
       slash: {
         name: "unshare",
@@ -574,10 +575,10 @@ export function Session() {
           .unshare({
             sessionID: route.sessionID,
           })
-          .then(() => toast.show({ message: "Session unshared successfully", variant: "success" }))
+          .then(() => toast.show({ message: t("tui.session.unshare_success"), variant: "success" }))
           .catch((error) => {
             toast.show({
-              message: error instanceof Error ? error.message : "Failed to unshare session",
+              message: error instanceof Error ? error.message : t("tui.session.unshare_failed"),
               variant: "error",
             })
           })
@@ -585,9 +586,9 @@ export function Session() {
       },
     },
     {
-      title: "Undo previous message",
+      title: t("tui.session.undo_previous_message"),
       value: "session.undo",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "undo",
       },
@@ -622,9 +623,9 @@ export function Session() {
       },
     },
     {
-      title: "Redo",
+      title: t("tui.session.redo"),
       value: "session.redo",
-      category: "Session",
+      category: t("tui.cat.session"),
       enabled: !!session()?.revert?.messageID,
       slash: {
         name: "redo",
@@ -648,9 +649,9 @@ export function Session() {
       },
     },
     {
-      title: sidebarVisible() ? "Hide sidebar" : "Show sidebar",
+      title: sidebarVisible() ? t("tui.cmd.hide_sidebar") : t("tui.cmd.show_sidebar"),
       value: "session.sidebar.toggle",
-      category: "Session",
+      category: t("tui.cat.session"),
       run: () => {
         batch(() => {
           const isVisible = sidebarVisible()
@@ -661,18 +662,18 @@ export function Session() {
       },
     },
     {
-      title: conceal() ? "Disable code concealment" : "Enable code concealment",
+      title: conceal() ? t("tui.cmd.disable_code_concealment") : t("tui.cmd.enable_code_concealment"),
       value: "session.toggle.conceal",
-      category: "Session",
+      category: t("tui.cat.session"),
       run: () => {
         setConceal((prev) => !prev)
         dialog.clear()
       },
     },
     {
-      title: showTimestamps() ? "Hide timestamps" : "Show timestamps",
+      title: showTimestamps() ? t("tui.cmd.hide_timestamps") : t("tui.cmd.show_timestamps"),
       value: "session.toggle.timestamps",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "timestamps",
         aliases: ["toggle-timestamps"],
@@ -683,9 +684,9 @@ export function Session() {
       },
     },
     {
-      title: showThinking() ? "Hide thinking" : "Show thinking",
+      title: showThinking() ? t("tui.cmd.hide_thinking") : t("tui.cmd.show_thinking"),
       value: "session.toggle.thinking",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "thinking",
         aliases: ["toggle-thinking"],
@@ -696,36 +697,36 @@ export function Session() {
       },
     },
     {
-      title: showDetails() ? "Hide tool details" : "Show tool details",
+      title: showDetails() ? t("tui.cmd.hide_tool_details") : t("tui.cmd.show_tool_details"),
       value: "session.toggle.actions",
-      category: "Session",
+      category: t("tui.cat.session"),
       run: () => {
         setShowDetails((prev) => !prev)
         dialog.clear()
       },
     },
     {
-      title: "Toggle session scrollbar",
+      title: t("tui.cmd.toggle_session_scrollbar"),
       value: "session.toggle.scrollbar",
-      category: "Session",
+      category: t("tui.cat.session"),
       run: () => {
         setShowScrollbar((prev) => !prev)
         dialog.clear()
       },
     },
     {
-      title: showGenericToolOutput() ? "Hide generic tool output" : "Show generic tool output",
+      title: showGenericToolOutput() ? t("tui.cmd.hide_generic_tool_output") : t("tui.cmd.show_generic_tool_output"),
       value: "session.toggle.generic_tool_output",
-      category: "Session",
+      category: t("tui.cat.session"),
       run: () => {
         setShowGenericToolOutput((prev) => !prev)
         dialog.clear()
       },
     },
     {
-      title: "Page up",
+      title: t("tui.common.page_up"),
       value: "session.page.up",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollBy(-scroll.height / 2)
@@ -733,9 +734,9 @@ export function Session() {
       },
     },
     {
-      title: "Page down",
+      title: t("tui.common.page_down"),
       value: "session.page.down",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollBy(scroll.height / 2)
@@ -743,9 +744,9 @@ export function Session() {
       },
     },
     {
-      title: "Line up",
+      title: t("tui.common.line_up"),
       value: "session.line.up",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollBy(-1)
@@ -753,9 +754,9 @@ export function Session() {
       },
     },
     {
-      title: "Line down",
+      title: t("tui.common.line_down"),
       value: "session.line.down",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollBy(1)
@@ -763,9 +764,9 @@ export function Session() {
       },
     },
     {
-      title: "Half page up",
+      title: t("tui.session.half_page_up"),
       value: "session.half.page.up",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollBy(-scroll.height / 4)
@@ -773,9 +774,9 @@ export function Session() {
       },
     },
     {
-      title: "Half page down",
+      title: t("tui.session.half_page_down"),
       value: "session.half.page.down",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollBy(scroll.height / 4)
@@ -783,9 +784,9 @@ export function Session() {
       },
     },
     {
-      title: "First message",
+      title: t("tui.cmd.first_message"),
       value: "session.first",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollTo(0)
@@ -793,9 +794,9 @@ export function Session() {
       },
     },
     {
-      title: "Last message",
+      title: t("tui.cmd.last_message"),
       value: "session.last",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         scroll.scrollTo(scroll.scrollHeight)
@@ -803,9 +804,9 @@ export function Session() {
       },
     },
     {
-      title: "Jump to last user message",
+      title: t("tui.session.jump_last_user"),
       value: "session.messages_last_user",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         const messages = sync.data.message[route.sessionID]
@@ -834,30 +835,30 @@ export function Session() {
       },
     },
     {
-      title: "Next message",
+      title: t("tui.cmd.next_message"),
       value: "session.message.next",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => scrollToMessage("next", dialog),
     },
     {
-      title: "Previous message",
+      title: t("tui.cmd.previous_message"),
       value: "session.message.previous",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => scrollToMessage("prev", dialog),
     },
     {
-      title: "Copy last assistant message",
+      title: t("tui.session.copy_last_assistant_message"),
       value: "messages.copy",
-      category: "Session",
+      category: t("tui.cat.session"),
       run: () => {
         const revertID = session()?.revert?.messageID
         const lastAssistantMessage = messages().findLast(
           (msg) => msg.role === "assistant" && (!revertID || msg.id < revertID),
         )
         if (!lastAssistantMessage) {
-          toast.show({ message: "No assistant messages found", variant: "error" })
+          toast.show({ message: t("tui.session.no_assistant_messages"), variant: "error" })
           dialog.clear()
           return
         }
@@ -865,7 +866,7 @@ export function Session() {
         const parts = sync.data.part[lastAssistantMessage.id] ?? []
         const textParts = parts.filter((part) => part.type === "text")
         if (textParts.length === 0) {
-          toast.show({ message: "No text parts found in last assistant message", variant: "error" })
+          toast.show({ message: t("tui.session.no_text_parts_in_last_assistant_message"), variant: "error" })
           dialog.clear()
           return
         }
@@ -876,7 +877,7 @@ export function Session() {
           .trim()
         if (!text) {
           toast.show({
-            message: "No text content found in last assistant message",
+            message: t("tui.session.no_text_content_in_last_assistant_message"),
             variant: "error",
           })
           dialog.clear()
@@ -884,15 +885,15 @@ export function Session() {
         }
 
         Clipboard.copy(text)
-          .then(() => toast.show({ message: "Message copied to clipboard!", variant: "success" }))
-          .catch(() => toast.show({ message: "Failed to copy to clipboard", variant: "error" }))
+          .then(() => toast.show({ message: t("tui.toast.message_copied_to_clipboard"), variant: "success" }))
+          .catch(() => toast.show({ message: t("tui.session.copy_failed"), variant: "error" }))
         dialog.clear()
       },
     },
     {
-      title: "Copy session transcript",
+      title: t("tui.session.copy_session_transcript"),
       value: "session.copy",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "copy",
       },
@@ -912,17 +913,17 @@ export function Session() {
             },
           )
           await Clipboard.copy(transcript)
-          toast.show({ message: "Session transcript copied to clipboard!", variant: "success" })
+          toast.show({ message: t("tui.session.transcript_copied"), variant: "success" })
         } catch {
-          toast.show({ message: "Failed to copy session transcript", variant: "error" })
+          toast.show({ message: t("tui.session.copy_transcript_failed"), variant: "error" })
         }
         dialog.clear()
       },
     },
     {
-      title: "Export session transcript",
+      title: t("tui.session.export_session_transcript"),
       value: "session.export",
-      category: "Session",
+      category: t("tui.cat.session"),
       slash: {
         name: "export",
       },
@@ -972,18 +973,18 @@ export function Session() {
               await Filesystem.write(filepath, result)
             }
 
-            toast.show({ message: `Session exported to ${filename}`, variant: "success" })
+            toast.show({ message: t("tui.session.exported_to", { filename }), variant: "success" })
           }
         } catch {
-          toast.show({ message: "Failed to export session", variant: "error" })
+          toast.show({ message: t("tui.session.export_failed"), variant: "error" })
         }
         dialog.clear()
       },
     },
     {
-      title: "Go to child session",
+      title: t("tui.session.go_to_child_session"),
       value: "session.child.first",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       run: () => {
         moveFirstChild()
@@ -991,9 +992,9 @@ export function Session() {
       },
     },
     {
-      title: "Go to parent session",
+      title: t("tui.session.go_to_parent_session"),
       value: "session.parent",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       enabled: !!session()?.parentID,
       run: childSessionHandler(() => {
@@ -1008,7 +1009,7 @@ export function Session() {
       }),
     },
     {
-      title: "Next child session",
+      title: t("tui.session.next_child_session"),
       value: "session.child.next",
       category: "Session",
       hidden: true,
@@ -1019,7 +1020,7 @@ export function Session() {
       }),
     },
     {
-      title: "Previous child session",
+      title: t("tui.session.previous_child_session"),
       value: "session.child.previous",
       category: "Session",
       hidden: true,
@@ -1373,7 +1374,7 @@ function UserMessage(props: {
               }
             >
               <text fg={theme.textMuted}>
-                <span style={{ bg: color(), fg: queuedFg(), bold: true }}> QUEUED </span>
+                <span style={{ bg: color(), fg: queuedFg(), bold: true }}>{t("tui.session.queued")}</span>
               </text>
             </Show>
           </box>
@@ -1435,7 +1436,7 @@ function AssistantMessage(props: { message: AssistantMessage; parts: Part[]; las
         <box paddingTop={1} paddingLeft={3}>
           <text fg={theme.text}>
             {childShortcut()}
-            <span style={{ fg: theme.textMuted }}> view subagents</span>
+            <span style={{ fg: theme.textMuted }}>{t("tui.session.view_subagents")}</span>
           </text>
         </box>
       </Show>

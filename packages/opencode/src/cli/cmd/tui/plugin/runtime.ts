@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { runtimeModules as keymapRuntimeModules } from "@opentui/keymap/runtime-modules"
 import { ensureRuntimePluginSupport } from "@opentui/solid/runtime-plugin-support/configure"
 import {
@@ -912,7 +913,7 @@ async function installPluginBySpec(
   if (!state) {
     return {
       ok: false,
-      message: "Plugin runtime is not ready.",
+      message: t("tui.plugin.not_ready_runtime"),
     }
   }
 
@@ -920,7 +921,7 @@ async function installPluginBySpec(
   if (!spec) {
     return {
       ok: false,
-      message: "Plugin package name is required",
+      message: t("tui.plugin.package_name_required"),
     }
   }
 
@@ -928,7 +929,7 @@ async function installPluginBySpec(
   if (!dir.directory) {
     return {
       ok: false,
-      message: "Paths are still syncing. Try again in a moment.",
+      message: t("tui.plugin.paths_syncing"),
     }
   }
 
@@ -947,13 +948,13 @@ async function installPluginBySpec(
     if (manifest.code === "manifest_no_targets") {
       return {
         ok: false,
-        message: `"${spec}" does not expose plugin entrypoints or oc-themes in package.json`,
+        message: t("tui.plugin.no_entrypoints", { spec }),
       }
     }
 
     return {
       ok: false,
-      message: `Installed "${spec}" but failed to read ${manifest.file}`,
+      message: t("tui.plugin.manifest_read_failed", { spec, file: manifest.file }),
     }
   }
 
@@ -969,7 +970,12 @@ async function installPluginBySpec(
     if (patch.code === "invalid_json") {
       return {
         ok: false,
-        message: `Invalid JSON in ${patch.file} (${patch.parse} at line ${patch.line}, column ${patch.col})`,
+        message: t("tui.plugin.invalid_json", {
+          file: patch.file,
+          parse: patch.parse,
+          line: patch.line,
+          col: patch.col,
+        }),
       }
     }
 

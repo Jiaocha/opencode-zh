@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import * as Clipboard from "./clipboard"
 
 type Toast = {
@@ -27,7 +28,7 @@ export function copy(renderer: Renderer, toast: Toast): boolean {
   if (!text) return false
 
   Clipboard.copy(text)
-    .then(() => toast.show({ message: "Copied to clipboard", variant: "info" }))
+    .then(() => toast.show({ message: t("tui.provider.copied_to_clipboard"), variant: "info" }))
     .catch(toast.error)
 
   renderer.clearSelection()

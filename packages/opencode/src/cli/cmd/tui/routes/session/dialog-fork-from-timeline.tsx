@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createMemo, onMount } from "solid-js"
 import { useSync } from "@tui/context/sync"
 import { DialogSelect, type DialogSelectOption } from "@tui/ui/dialog-select"
@@ -22,7 +23,7 @@ export function DialogForkFromTimeline(props: { sessionID: string; onMove: (mess
   const options = createMemo((): DialogSelectOption<string | undefined>[] => {
     const messages = sync.data.message[props.sessionID] ?? []
     const fullSession = {
-      title: "Full session",
+      title: t("tui.session.full_session"),
       value: undefined,
       onSelect: async (dialog: DialogContext) => {
         const forked = await sdk.client.session.fork({ sessionID: props.sessionID })

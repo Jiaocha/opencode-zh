@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createContext, useContext, type ParentProps, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useTheme } from "@tui/context/theme"
@@ -74,7 +75,7 @@ function init() {
         })
       toast.show({
         variant: "error",
-        message: "An unknown error has occurred",
+        message: t("tui.error.unknown_generic"),
       })
     },
     get currentToast(): ToastOptions | null {

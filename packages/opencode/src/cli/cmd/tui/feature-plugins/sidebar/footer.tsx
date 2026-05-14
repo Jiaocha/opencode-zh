@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import type { TuiPlugin, TuiPluginApi } from "@opencode-ai/plugin/tui"
 import type { InternalTuiPlugin } from "../../plugin/internal"
 import { createMemo, Show } from "solid-js"
@@ -43,18 +44,16 @@ function View(props: { api: TuiPluginApi }) {
           <box flexGrow={1} gap={1}>
             <box flexDirection="row" justifyContent="space-between">
               <text fg={theme().text}>
-                <b>Getting started</b>
+                <b>{t("tui.sidebar.getting_started")}</b>
               </text>
               <text fg={theme().textMuted} onMouseDown={() => props.api.kv.set("dismissed_getting_started", true)}>
                 ✕
               </text>
             </box>
-            <text fg={theme().textMuted}>OpenCode includes free models so you can start immediately.</text>
-            <text fg={theme().textMuted}>
-              Connect from 75+ providers to use other models, including Claude, GPT, Gemini etc
-            </text>
+            <text fg={theme().textMuted}>{t("tui.sidebar.free_models_hint")}</text>
+            <text fg={theme().textMuted}>{t("tui.sidebar.connect_providers_hint")}</text>
             <box flexDirection="row" gap={1} justifyContent="space-between">
-              <text fg={theme().text}>Connect provider</text>
+              <text fg={theme().text}>{t("tui.sidebar.connect_provider")}</text>
               <text fg={theme().textMuted}>/connect</text>
             </box>
           </box>

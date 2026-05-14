@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createMemo } from "solid-js"
 import { useLocal } from "@tui/context/local"
 import { DialogSelect } from "@tui/ui/dialog-select"
@@ -11,7 +12,7 @@ export function DialogVariant() {
     return [
       {
         value: "default",
-        title: "Default",
+        title: t("tui.cmd.default"),
         onSelect: () => {
           dialog.clear()
           local.model.variant.set(undefined)

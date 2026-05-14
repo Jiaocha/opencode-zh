@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createMemo, createSignal } from "solid-js"
 import { useLocal } from "@tui/context/local"
 import { useSync } from "@tui/context/sync"
@@ -47,7 +48,7 @@ export function DialogMcp() {
   const actions = createMemo(() => [
     {
       command: "dialog.mcp.toggle",
-      title: "toggle",
+      title: t("tui.plugin.toggle"),
       onTrigger: async (option: DialogSelectOption<string>) => {
         // Prevent toggling while an operation is already in progress
         if (loading() !== null) return

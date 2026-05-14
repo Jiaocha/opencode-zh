@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import {
   InputRenderable,
   RGBA,
@@ -234,8 +235,8 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
       commands: [
         {
           name: "dialog.select.prev",
-          title: "Previous item",
-          category: "Dialog",
+          title: t("tui.common.previous_item"),
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             move(-1)
@@ -243,8 +244,8 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         },
         {
           name: "dialog.select.next",
-          title: "Next item",
-          category: "Dialog",
+          title: t("tui.common.next_item"),
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             move(1)
@@ -252,8 +253,8 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         },
         {
           name: "dialog.select.page_up",
-          title: "Page up",
-          category: "Dialog",
+          title: t("tui.common.page_up"),
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             move(-10)
@@ -261,8 +262,8 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         },
         {
           name: "dialog.select.page_down",
-          title: "Page down",
-          category: "Dialog",
+          title: t("tui.common.page_down"),
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             move(10)
@@ -270,8 +271,8 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         },
         {
           name: "dialog.select.home",
-          title: "First item",
-          category: "Dialog",
+          title: t("tui.common.first_item"),
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             moveTo(0)
@@ -279,8 +280,8 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         },
         {
           name: "dialog.select.end",
-          title: "Last item",
-          category: "Dialog",
+          title: t("tui.common.last_item"),
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             moveTo(flat().length - 1)
@@ -288,14 +289,14 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         },
         {
           name: "dialog.select.submit",
-          title: "Select item",
-          category: "Dialog",
+          title: t("tui.common.select_item"),
+          category: t("tui.cat.dialog"),
           run: submit,
         },
         ...enabledActions.map((item) => ({
           name: item.command,
           title: item.title,
-          category: "Dialog",
+          category: t("tui.cat.dialog"),
           run() {
             setStore("input", "keyboard")
             const option = selected()
@@ -374,7 +375,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
                   input.focus()
                 }, 1)
               }}
-              placeholder={props.placeholder ?? "Search"}
+              placeholder={props.placeholder ?? t("tui.common.search")}
               placeholderColor={theme.textMuted}
             />
           </box>
@@ -384,7 +385,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         when={grouped().length > 0}
         fallback={
           <box paddingLeft={4} paddingRight={4} paddingTop={1}>
-            <text fg={theme.textMuted}>No results found</text>
+            <text fg={theme.textMuted}>{t("tui.select.no_results")}</text>
           </box>
         }
       >

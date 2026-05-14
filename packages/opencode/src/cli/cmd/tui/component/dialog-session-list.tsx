@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { useDialog } from "@tui/ui/dialog"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useRoute } from "@tui/context/route"
@@ -91,7 +92,7 @@ export function DialogSessionList() {
           if (result.error) {
             toast.show({
               variant: "error",
-              title: "Failed to delete workspace",
+              title: t("tui.workspace.delete_failed"),
               message: errorMessage(result.error),
             })
             return false
@@ -188,7 +189,7 @@ export function DialogSessionList() {
           ? () => <text fg={theme.accent}>{slot}</text>
           : undefined
       return {
-        title: isDeleting ? `Press ${deleteHint()} again to confirm` : x.title,
+        title: isDeleting ? t("tui.common.confirm_delete_again", { key: deleteHint() }) : x.title,
         bg: isDeleting ? theme.error : undefined,
         value: x.id,
         category,
@@ -203,13 +204,13 @@ export function DialogSessionList() {
         const x = sessionMap.get(id)
         if (!x) return undefined
         const label = new Date(x.time.updated).toDateString()
-        return buildOption(id, label === today ? "Today" : label)
+        return buildOption(id, label === today ? t("tui.common.today") : label)
       })
       .filter((x) => x !== undefined)
 
     return [
-      ...pinned.map((id) => buildOption(id, "Pinned")).filter((x) => x !== undefined),
-      ...recent.map((id) => buildOption(id, "Recent")).filter((x) => x !== undefined),
+      ...pinned.map((id) => buildOption(id, t("tui.session.pinned"))).filter((x) => x !== undefined),
+      ...recent.map((id) => buildOption(id, t("tui.session.recent"))).filter((x) => x !== undefined),
       ...remaining,
     ]
   })
@@ -220,7 +221,7 @@ export function DialogSessionList() {
 
   return (
     <DialogSelect
-      title="Sessions"
+      title={t("tui.session.sessions")}
       options={options()}
       skipFilter={true}
       current={currentSessionID()}
@@ -240,19 +241,19 @@ export function DialogSessionList() {
           ? [
               {
                 command: "session.pin.toggle",
-                title: "pin/unpin",
+                title: t("tui.session.pin_unpin"),
                 onTrigger: (option: { value: string }) => {
                   local.session.togglePin(option.value)
                 },
               },
               {
                 command: "session.toggle.recent",
-                title: "toggle recent",
+                title: t("tui.session.toggle_recent"),
                 onTrigger: (option: { value: string }) => {
                   if (local.session.isPinned(option.value)) {
                     toast.show({
                       variant: "info",
-                      message: "Unpin the session first to toggle it in Recent",
+                      message: t("tui.session.unpin_before_recent"),
                       duration: 3000,
                     })
                     return
@@ -264,7 +265,7 @@ export function DialogSessionList() {
           : []),
         {
           command: "session.delete",
-          title: "delete",
+          title: t("cli.cmd.session.delete"),
           onTrigger: async (option) => {
             if (toDelete() === option.value) {
               const session = sessions().find((item) => item.id === option.value)
@@ -280,7 +281,7 @@ export function DialogSessionList() {
                   } else {
                     toast.show({
                       variant: "error",
-                      title: "Failed to delete session",
+                      title: t("tui.session.delete_failed"),
                       message: errorMessage(result.error),
                     })
                   }
@@ -293,7 +294,7 @@ export function DialogSessionList() {
                 } else {
                   toast.show({
                     variant: "error",
-                    title: "Failed to delete session",
+                    title: t("tui.session.delete_failed"),
                     message: errorMessage(err),
                   })
                 }
@@ -312,7 +313,7 @@ export function DialogSessionList() {
         },
         {
           command: "session.rename",
-          title: "rename",
+          title: t("cli.cmd.session.rename"),
           onTrigger: async (option) => {
             dialog.replace(() => <DialogSessionRename session={option.value} />)
           },

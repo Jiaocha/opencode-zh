@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
 import { createEffect, createSignal, onMount } from "solid-js"
 import { Logo } from "../component/logo"
@@ -13,7 +14,11 @@ import { useEditorContext } from "@tui/context/editor"
 
 let once = false
 const placeholder = {
-  normal: ["Fix a TODO in the codebase", "What is the tech stack of this project?", "Fix broken tests"],
+  normal: [
+    t("tui.home.placeholder_1"),
+    t("tui.home.placeholder_2"),
+    t("tui.home.placeholder_3"),
+  ],
   shell: ["ls -la", "git status", "pwd"],
 }
 

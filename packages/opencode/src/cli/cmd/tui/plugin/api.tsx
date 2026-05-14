@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import type { TuiDialogSelectOption, TuiPluginApi, TuiRouteDefinition, TuiSlotProps } from "@opencode-ai/plugin/tui"
 import type { useEvent } from "@tui/context/event"
 import type { useRoute } from "@tui/context/route"
@@ -332,7 +333,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
     renderer: input.renderer,
     slots: {
       register() {
-        throw new Error("slots.register is only available in plugin context")
+        throw new Error(t("tui.plugin.install_context_only").replace("plugins.install", "slots.register"))
       },
     },
     plugins: {
@@ -351,7 +352,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
       async install() {
         return {
           ok: false,
-          message: "plugins.install is only available in plugin context",
+          message: t("tui.plugin.install_context_only"),
         }
       },
     },
@@ -370,7 +371,7 @@ export function createTuiApi(input: Input): TuiPluginApi {
         return input.theme.set(name)
       },
       async install(_jsonPath) {
-        throw new Error("theme.install is only available in plugin context")
+        throw new Error(t("tui.plugin.install_context_only").replace("plugins.install", "theme.install"))
       },
       mode() {
         return input.theme.mode()

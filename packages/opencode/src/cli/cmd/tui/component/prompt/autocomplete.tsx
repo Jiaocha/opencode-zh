@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import type { BoxRenderable, TextareaRenderable, ScrollBoxRenderable } from "@opentui/core"
 import { pathToFileURL } from "bun"
 import fuzzysort from "fuzzysort"
@@ -670,8 +671,8 @@ export function Autocomplete(props: {
     commands: [
       {
         name: "prompt.autocomplete.prev",
-        title: "Previous autocomplete item",
-        category: "Autocomplete",
+        title: t("tui.prompt.previous_autocomplete_item"),
+        category: t("tui.cat.autocomplete"),
         run() {
           setStore("input", "keyboard")
           move(-1)
@@ -679,8 +680,8 @@ export function Autocomplete(props: {
       },
       {
         name: "prompt.autocomplete.next",
-        title: "Next autocomplete item",
-        category: "Autocomplete",
+        title: t("tui.prompt.next_autocomplete_item"),
+        category: t("tui.cat.autocomplete"),
         run() {
           setStore("input", "keyboard")
           move(1)
@@ -688,24 +689,24 @@ export function Autocomplete(props: {
       },
       {
         name: "prompt.autocomplete.hide",
-        title: "Hide autocomplete",
-        category: "Autocomplete",
+        title: t("tui.prompt.hide_autocomplete"),
+        category: t("tui.cat.autocomplete"),
         run() {
           hide()
         },
       },
       {
         name: "prompt.autocomplete.select",
-        title: "Select autocomplete item",
-        category: "Autocomplete",
+        title: t("tui.prompt.select_autocomplete_item"),
+        category: t("tui.cat.autocomplete"),
         run() {
           select()
         },
       },
       {
         name: "prompt.autocomplete.complete",
-        title: "Complete autocomplete item",
-        category: "Autocomplete",
+        title: t("tui.prompt.complete_autocomplete_item"),
+        category: t("tui.cat.autocomplete"),
         run() {
           const selected = options()[store.selected]
           if (selected?.isDirectory) {
@@ -829,7 +830,7 @@ export function Autocomplete(props: {
           each={options()}
           fallback={
             <box paddingLeft={1} paddingRight={1}>
-              <text fg={theme.textMuted}>No matching items</text>
+              <text fg={theme.textMuted}>{t("tui.autocomplete.no_matching")}</text>
             </box>
           }
         >

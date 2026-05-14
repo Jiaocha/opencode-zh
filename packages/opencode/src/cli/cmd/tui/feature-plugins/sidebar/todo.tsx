@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import type { TuiPlugin, TuiPluginApi } from "@opencode-ai/plugin/tui"
 import type { InternalTuiPlugin } from "../../plugin/internal"
 import { createMemo, For, Show, createSignal } from "solid-js"
@@ -19,7 +20,7 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
             <text fg={theme().text}>{open() ? "▼" : "▶"}</text>
           </Show>
           <text fg={theme().text}>
-            <b>Todo</b>
+            <b>{t("tui.sidebar.todo")}</b>
           </text>
         </box>
         <Show when={list().length <= 2 || open()}>
