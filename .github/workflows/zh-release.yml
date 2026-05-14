@@ -300,6 +300,24 @@ jobs:
           OPENCODE_SKIP_SIGNING: "true"
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
+      - name: Normalize desktop artifact names
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${{ matrix.settings.name }}" in
+            linux-x64)
+              mv -f packages/desktop/dist/opencode-desktop-linux-x86_64.AppImage packages/desktop/dist/opencode-desktop-linux-x64.AppImage
+              mv -f packages/desktop/dist/opencode-desktop-linux-amd64.deb packages/desktop/dist/opencode-desktop-linux-x64.deb
+              mv -f packages/desktop/dist/opencode-desktop-linux-x86_64.rpm packages/desktop/dist/opencode-desktop-linux-x64.rpm
+              ;;
+            linux-arm64)
+              mv -f packages/desktop/dist/opencode-desktop-linux-aarch64.rpm packages/desktop/dist/opencode-desktop-linux-arm64.rpm
+              ;;
+            windows-x64)
+              ;;
+          esac
+
       - name: Verify desktop artifacts
         shell: bash
         run: |
