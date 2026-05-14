@@ -1,9 +1,15 @@
 {
   "target": "all",
   "locale": "zh-CN",
-  "dictionaries": ["localization/dictionaries/zh-CN/cli.json", "localization/dictionaries/zh-CN/tui.json"],
-  "output": ["packages/opencode/src/i18n/zh-cn.ts", "packages/opencode/src/i18n/index.ts"],
-  "appliedAt": "2026-05-14T05:41:01.527Z",
+  "dictionaries": [
+    "localization/dictionaries/zh-CN/cli.json",
+    "localization/dictionaries/zh-CN/tui.json"
+  ],
+  "output": [
+    "packages/opencode/src/i18n/zh-cn.ts",
+    "packages/opencode/src/i18n/index.ts"
+  ],
+  "appliedAt": "2026-05-14T05:43:12.389Z",
   "keysCount": 1057,
   "keys": [
     "cli.cmd.account.describe",
