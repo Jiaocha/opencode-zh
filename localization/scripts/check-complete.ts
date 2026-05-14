@@ -295,6 +295,30 @@ async function main() {
     }
   }
 
+  const commandIndex = path.join(repo, "packages/opencode/src/command/index.ts")
+  if (await exists(commandIndex)) {
+    const content = await fs.readFile(commandIndex, "utf8")
+    const relative = path.relative(repo, commandIndex).replaceAll("\\", "/")
+    const matches: string[] = []
+    const missingTKeys: string[] = []
+    for (const phrase of ["guided AGENTS.md setup", "review changes [commit|branch|pr], defaults to uncommitted"]) {
+      if (content.includes(phrase)) matches.push(`${relative}: ${phrase}`)
+    }
+    for (const literal of collectUserFacingTuiLiterals(content)) {
+      matches.push(`${relative}: ${literal}`)
+    }
+    for (const match of content.matchAll(/\bt\(\s*["']((?:cli|tui)\.[^"']+)["']/g)) {
+      const key = match[1]
+      if (!localizedKeys.has(key)) missingTKeys.push(`${relative}: ${key}`)
+    }
+    if (matches.length > 0) {
+      failures.push(`Slash 命令仍存在英文漏译 ${matches.length} 处: ${matches.slice(0, 30).join("; ")}`)
+    }
+    if (missingTKeys.length > 0) {
+      failures.push(`Slash 命令引用了 ${missingTKeys.length} 个未定义汉化键: ${missingTKeys.slice(0, 30).join("; ")}`)
+    }
+  }
+
   if (failures.length > 0) {
     console.error("[localize] 汉化完整性检查失败")
     for (const item of failures) console.error(`- ${item}`)

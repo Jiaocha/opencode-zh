@@ -9,6 +9,7 @@ import { MCP } from "../mcp"
 import { Skill } from "../skill"
 import PROMPT_INITIALIZE from "./template/initialize.txt"
 import PROMPT_REVIEW from "./template/review.txt"
+import { t } from "@/i18n"
 
 type State = {
   commands: Record<string, Info>
@@ -76,7 +77,7 @@ export const layer = Layer.effect(
 
       commands[Default.INIT] = {
         name: Default.INIT,
-        description: "guided AGENTS.md setup",
+        description: t("tui.command.init_description"),
         source: "command",
         get template() {
           return PROMPT_INITIALIZE.replace("${path}", ctx.worktree)
@@ -85,7 +86,7 @@ export const layer = Layer.effect(
       }
       commands[Default.REVIEW] = {
         name: Default.REVIEW,
-        description: "review changes [commit|branch|pr], defaults to uncommitted",
+        description: t("tui.command.review_description"),
         source: "command",
         get template() {
           return PROMPT_REVIEW.replace("${path}", ctx.worktree)

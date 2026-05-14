@@ -25,11 +25,7 @@ const findLoc = async (cwd: string) => {
   throw new Error("Unable to locate localization root")
 }
 
-const snakeCase = (str: string) =>
-  str
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^\w]/g, "")
+const snakeCase = (str: string) => str.toLowerCase().replace(/\s+/g, "_").replace(/[^\w]/g, "")
 
 async function main() {
   const cwd = process.cwd()
@@ -38,7 +34,7 @@ async function main() {
 
   const tuiDict = JSON.parse(await fs.readFile(path.join(loc, "dictionaries/zh-CN/tui.json"), "utf8"))
   const cliDict = JSON.parse(await fs.readFile(path.join(loc, "dictionaries/zh-CN/cli.json"), "utf8"))
-  
+
   // 合并字典
   const fullDict = { ...tuiDict, ...cliDict }
 
@@ -59,13 +55,43 @@ async function main() {
     if (content.includes('normal: ["Fix a TODO')) {
       content = content.replace(
         'normal: ["Fix a TODO in the codebase", "What is the tech stack of this project?", "Fix broken tests"]',
-        'normal: [\n    t("tui.home.placeholder_1"),\n    t("tui.home.placeholder_2"),\n    t("tui.home.placeholder_3"),\n  ]'
+        'normal: [\n    t("tui.home.placeholder_1"),\n    t("tui.home.placeholder_2"),\n    t("tui.home.placeholder_3"),\n  ]',
       )
       if (!content.includes('import { t } from "@/i18n"')) {
         content = `import { t } from "@/i18n"\n${content}`
       }
       await fs.writeFile(homePath, content, "utf8")
       process.stdout.write(`Patched Special: Home.tsx placeholders\n`)
+    }
+  }
+
+  const commandPath = path.join(repo, "packages/opencode/src/command/index.ts")
+  if (await exists(commandPath)) {
+    let content = await fs.readFile(commandPath, "utf8")
+    let modified = false
+    const replacements: Array<[string, string]> = [
+      ['description: "guided AGENTS.md setup"', 'description: t("tui.command.init_description")'],
+      [
+        'description: "review changes [commit|branch|pr], defaults to uncommitted"',
+        'description: t("tui.command.review_description")',
+      ],
+    ]
+
+    for (const [from, to] of replacements) {
+      if (!content.includes(from)) continue
+      content = content.replace(from, to)
+      modified = true
+    }
+
+    if (modified) {
+      if (!content.includes('import { t } from "@/i18n"')) {
+        content = content.replace(
+          'import PROMPT_REVIEW from "./template/review.txt"\n',
+          'import PROMPT_REVIEW from "./template/review.txt"\nimport { t } from "@/i18n"\n',
+        )
+      }
+      await fs.writeFile(commandPath, content, "utf8")
+      process.stdout.write("Patched Special: Slash command descriptions\n")
     }
   }
 
@@ -99,7 +125,7 @@ async function main() {
 
         if (key) {
           const escaped = targetText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-          
+
           // 场景 1: JSX 属性 placeholder="Text"
           const propRegex = new RegExp(`(\\w+)=["']${escaped}["']`, "g")
           if (propRegex.test(content)) {
@@ -127,7 +153,7 @@ async function main() {
       }
 
       if (modified) {
-        if (!content.includes('import { t }')) {
+        if (!content.includes("import { t }")) {
           content = `import { t } from "@/i18n"\n${content}`
         }
         await fs.writeFile(fullPath, content, "utf8")

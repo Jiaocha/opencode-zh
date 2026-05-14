@@ -142,6 +142,8 @@
   "tui.cmd.view_status": "查看状态",
   "tui.cmd.write_heap_snapshot": "写入堆快照",
   "tui.command.title": "命令",
+  "tui.command.init_description": "引导式 AGENTS.md 设置",
+  "tui.command.review_description": "审查更改 [commit|branch|pr]，默认审查未提交更改",
   "tui.common.allow": "允许",
   "tui.common.cancel": "取消",
   "tui.common.close": "关闭",
