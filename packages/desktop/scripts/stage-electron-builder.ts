@@ -4,6 +4,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const desktopDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+const rootDir = path.resolve(desktopDir, "../..")
 const stageDir = path.join(desktopDir, ".electron-builder-app")
 const nodePtyPkg = `@lydell/node-pty-${process.platform}-${process.arch}`
 const packageJson = JSON.parse(readFileSync(path.join(desktopDir, "package.json"), "utf8"))
@@ -35,9 +36,12 @@ const stagedPackageJson: Record<string, unknown> = {
 
 const nodePtyVersion = packageJson.optionalDependencies?.[nodePtyPkg]
 if (nodePtyVersion) {
-  const source = path.join(desktopDir, "node_modules", nodePtyPkg)
+  const source = [
+    path.join(desktopDir, "node_modules", nodePtyPkg),
+    path.join(rootDir, "node_modules", nodePtyPkg),
+  ].find((candidate) => existsSync(candidate))
   const destination = path.join(stageDir, "node_modules", nodePtyPkg)
-  if (!existsSync(source)) {
+  if (!source) {
     throw new Error(`Missing native dependency ${nodePtyPkg}; run bun install before packaging`)
   }
   mkdirSync(path.dirname(destination), { recursive: true })
