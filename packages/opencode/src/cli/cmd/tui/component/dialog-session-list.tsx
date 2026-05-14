@@ -58,7 +58,9 @@ export function DialogSessionList() {
         const workspace = result?.data
         if (!workspace) {
           toast.show({
-            message: `Failed to create workspace: ${errorMessage(result?.error ?? "no response")}`,
+            message: t("tui.workspace.create_failed", {
+              error: errorMessage(result?.error ?? t("tui.error.no_response")),
+            }),
             variant: "error",
           })
           return

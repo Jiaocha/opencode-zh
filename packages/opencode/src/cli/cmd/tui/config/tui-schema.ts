@@ -30,7 +30,7 @@ export function resolveAttentionSoundPaths(
 
 export const KeymapLeaderTimeoutDefault = 2000
 const KeymapLeaderTimeout = Schema.Int.check(Schema.isGreaterThan(0)).annotate({
-  description: "Leader key timeout in milliseconds",
+  description: "引导键超时时间，单位为毫秒",
 })
 
 const TuiAttentionSounds = Schema.Struct({
@@ -45,11 +45,11 @@ const TuiAttentionSounds = Schema.Struct({
 export const ScrollSpeed = Schema.Number.check(Schema.isGreaterThanOrEqualTo(0.001))
 
 export const ScrollAcceleration = Schema.Struct({
-  enabled: Schema.Boolean.annotate({ description: "Enable scroll acceleration" }),
-}).annotate({ description: "Scroll acceleration settings" })
+  enabled: Schema.Boolean.annotate({ description: "启用滚动加速" }),
+}).annotate({ description: "滚动加速设置" })
 
 export const DiffStyle = Schema.Literals(["auto", "stacked"]).annotate({
-  description: "Control diff rendering style: 'auto' adapts to terminal width, 'stacked' always shows single column",
+  description: "控制差异渲染样式：'auto' 根据终端宽度自适应，'stacked' 始终使用单列显示",
 })
 
 export const Attention = Schema.Struct({
@@ -59,7 +59,7 @@ export const Attention = Schema.Struct({
   volume: Schema.optional(Schema.Number.check(Schema.isGreaterThanOrEqualTo(0), Schema.isLessThanOrEqualTo(1))),
   sound_pack: Schema.optional(Schema.String),
   sounds: Schema.optional(TuiAttentionSounds),
-}).annotate({ description: "Attention notification and sound settings" })
+}).annotate({ description: "注意力提醒、通知和声音设置" })
 
 export const TuiInfo = Schema.Struct({
   $schema: Schema.optional(Schema.String),
@@ -70,9 +70,9 @@ export const TuiInfo = Schema.Struct({
   leader_timeout: Schema.optional(KeymapLeaderTimeout),
   attention: Schema.optional(Attention),
   scroll_speed: Schema.optional(ScrollSpeed).annotate({
-    description: "TUI scroll speed",
+    description: "TUI 滚动速度",
   }),
   scroll_acceleration: Schema.optional(ScrollAcceleration),
   diff_style: Schema.optional(DiffStyle),
-  mouse: Schema.optional(Schema.Boolean).annotate({ description: "Enable or disable mouse capture (default: true)" }),
+  mouse: Schema.optional(Schema.Boolean).annotate({ description: "启用或禁用鼠标捕获 (默认：true)" }),
 })

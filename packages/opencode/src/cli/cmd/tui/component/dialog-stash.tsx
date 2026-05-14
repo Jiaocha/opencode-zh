@@ -15,10 +15,10 @@ function getRelativeTime(timestamp: number): string {
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
 
-  if (seconds < 60) return "just now"
-  if (minutes < 60) return `${minutes}m ago`
-  if (hours < 24) return `${hours}h ago`
-  if (days < 7) return `${days}d ago`
+  if (seconds < 60) return t("tui.stash.just_now")
+  if (minutes < 60) return t("tui.stash.minutes_ago", { count: minutes })
+  if (hours < 24) return t("tui.stash.hours_ago", { count: hours })
+  if (days < 7) return t("tui.stash.days_ago", { count: days })
   return Locale.datetime(timestamp)
 }
 
@@ -43,11 +43,11 @@ export function DialogStash(props: { onSelect: (entry: StashEntry) => void }) {
         const isDeleting = toDelete() === index
         const lineCount = (entry.input.match(/\n/g)?.length ?? 0) + 1
         return {
-          title: isDeleting ? `Press ${deleteHint()} again to confirm` : getStashPreview(entry.input),
+          title: isDeleting ? t("tui.stash.confirm_delete", { key: deleteHint() }) : getStashPreview(entry.input),
           bg: isDeleting ? theme.error : undefined,
           value: index,
           description: getRelativeTime(entry.timestamp),
-          footer: lineCount > 1 ? `~${lineCount} lines` : undefined,
+          footer: lineCount > 1 ? t("tui.stash.lines", { count: lineCount }) : undefined,
         }
       })
       .toReversed()
@@ -55,7 +55,7 @@ export function DialogStash(props: { onSelect: (entry: StashEntry) => void }) {
 
   return (
     <DialogSelect
-      title="Stash"
+      title={t("tui.stash.title")}
       options={options()}
       onMove={() => {
         setToDelete(undefined)

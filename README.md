@@ -41,13 +41,21 @@
 4. 构建并校验指定平台的可执行文件。
 5. 自动创建或更新 GitHub Release。
 
-当前自动发布的 CLI 构建资产：
+当前自动发布的 CLI/TUI 构建资产：
 
 | 平台    | 架构        | 发布文件                      |
 | ------- | ----------- | ----------------------------- |
 | Linux   | amd64 / x64 | `opencode-linux-x64.tar.gz`   |
 | Linux   | arm64       | `opencode-linux-arm64.tar.gz` |
 | Windows | 64 位 / x64 | `opencode-windows-x64.zip`    |
+
+当前自动发布的桌面端构建资产：
+
+| 平台    | 架构        | 发布文件                                                                                                        |
+| ------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| Linux   | amd64 / x64 | `opencode-desktop-linux-x64.AppImage`、`opencode-desktop-linux-x64.deb`、`opencode-desktop-linux-x64.rpm`       |
+| Linux   | arm64       | `opencode-desktop-linux-arm64.AppImage`、`opencode-desktop-linux-arm64.deb`、`opencode-desktop-linux-arm64.rpm` |
+| Windows | 64 位 / x64 | `opencode-desktop-win-x64.exe`                                                                                  |
 
 最新版本请查看 [Releases](https://github.com/Jiaocha/opencode-zh/releases)。
 

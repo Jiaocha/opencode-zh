@@ -231,12 +231,116 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  build-desktop:
+    name: Build zh-CN desktop assets (${{ matrix.settings.name }})
+    runs-on: ${{ matrix.settings.host }}
+    needs: sync-localize
+    if: needs.sync-localize.outputs.should_build == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - name: linux-x64
+            host: ubuntu-24.04
+            rust_target: x86_64-unknown-linux-gnu
+            platform_flag: --linux
+          - name: linux-arm64
+            host: ubuntu-24.04-arm
+            rust_target: aarch64-unknown-linux-gnu
+            platform_flag: --linux --arm64
+          - name: windows-x64
+            host: windows-2025
+            rust_target: x86_64-pc-windows-msvc
+            platform_flag: --win
+    steps:
+      - name: Checkout localized commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.sync-localize.outputs.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "24"
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+        with:
+          install-flags: ${{ runner.os == 'Windows' && '' || '--linker hoisted' }}
+
+      - name: Install Linux packaging dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends rpm
+
+      - name: Prepare desktop build
+        run: bun ./scripts/prepare.ts
+        working-directory: packages/desktop
+        env:
+          OPENCODE_VERSION: ${{ needs.sync-localize.outputs.version }}
+          OPENCODE_CHANNEL: prod
+          RUST_TARGET: ${{ matrix.settings.rust_target }}
+
+      - name: Build desktop app
+        run: bun run build
+        working-directory: packages/desktop
+        env:
+          OPENCODE_CHANNEL: prod
+
+      - name: Stage desktop app for packaging
+        run: bun run stage:package
+        working-directory: packages/desktop
+
+      - name: Package desktop app
+        run: npx electron-builder ${{ matrix.settings.platform_flag }} --publish never --config electron-builder.config.ts
+        working-directory: packages/desktop
+        timeout-minutes: 60
+        env:
+          OPENCODE_CHANNEL: prod
+          OPENCODE_SKIP_SIGNING: "true"
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Verify desktop artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          find packages/desktop/dist -maxdepth 2 -type f -print
+
+          case "${{ matrix.settings.name }}" in
+            linux-x64)
+              test -s packages/desktop/dist/opencode-desktop-linux-x64.AppImage
+              test -s packages/desktop/dist/opencode-desktop-linux-x64.deb
+              test -s packages/desktop/dist/opencode-desktop-linux-x64.rpm
+              ;;
+            linux-arm64)
+              test -s packages/desktop/dist/opencode-desktop-linux-arm64.AppImage
+              test -s packages/desktop/dist/opencode-desktop-linux-arm64.deb
+              test -s packages/desktop/dist/opencode-desktop-linux-arm64.rpm
+              ;;
+            windows-x64)
+              test -s packages/desktop/dist/opencode-desktop-win-x64.exe
+              ;;
+          esac
+
+      - name: Upload desktop assets
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: opencode-zh-desktop-${{ matrix.settings.name }}
+          path: |
+            packages/desktop/dist/*.AppImage
+            packages/desktop/dist/*.deb
+            packages/desktop/dist/*.rpm
+            packages/desktop/dist/*.exe
+          if-no-files-found: error
+          retention-days: 14
+
   publish-release:
     name: Publish GitHub Release
     runs-on: ubuntu-latest
     needs:
       - sync-localize
       - build-cli
+      - build-desktop
     if: needs.sync-localize.outputs.should_release == 'true'
     steps:
       - name: Download release notes
@@ -251,6 +355,13 @@ jobs:
           name: opencode-zh-cli-assets
           path: release-assets
 
+      - name: Download desktop assets
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: opencode-zh-desktop-*
+          path: release-desktop-assets
+          merge-multiple: true
+
       - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ secrets.ZH_RELEASE_TOKEN || github.token }}
@@ -261,13 +372,22 @@ jobs:
           set -euo pipefail
 
           notes="release-notes/opencode-zh-release-notes.md"
-          mapfile -d '' assets < <(find release-assets -type f \( -name '*.zip' -o -name '*.tar.gz' \) -print0 | sort -z)
+          mapfile -d '' cli_assets < <(find release-assets -type f \( -name '*.zip' -o -name '*.tar.gz' \) -print0 | sort -z)
+          mapfile -d '' desktop_assets < <(find release-desktop-assets -type f \( -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' -o -name '*.exe' \) -print0 | sort -z)
 
-          if [ "${#assets[@]}" -ne 3 ]; then
-            echo "Expected 3 release assets, found ${#assets[@]}."
+          if [ "${#cli_assets[@]}" -ne 3 ]; then
+            echo "Expected 3 CLI release assets, found ${#cli_assets[@]}."
             find release-assets -maxdepth 5 -type f -print
             exit 1
           fi
+
+          if [ "${#desktop_assets[@]}" -ne 7 ]; then
+            echo "Expected 7 desktop release assets, found ${#desktop_assets[@]}."
+            find release-desktop-assets -maxdepth 5 -type f -print
+            exit 1
+          fi
+
+          assets=("${cli_assets[@]}" "${desktop_assets[@]}")
 
           if gh release view "$TAG" --repo "$DOWNSTREAM_REPO" >/dev/null 2>&1; then
             gh release edit "$TAG" --repo "$DOWNSTREAM_REPO" --target "$HEAD_SHA" --title "$TITLE" --notes-file "$notes"

@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { DialogPrompt } from "@tui/ui/dialog-prompt"
 import { useDialog } from "@tui/ui/dialog"
 import { useSync } from "@tui/context/sync"
@@ -16,7 +17,7 @@ export function DialogSessionRename(props: DialogSessionRenameProps) {
 
   return (
     <DialogPrompt
-      title="Rename Session"
+      title={t("tui.session.rename_title")}
       value={session()?.title}
       onConfirm={(value) => {
         void sdk.client.session.update({

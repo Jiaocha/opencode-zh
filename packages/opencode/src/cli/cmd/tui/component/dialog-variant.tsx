@@ -32,7 +32,7 @@ export function DialogVariant() {
   return (
     <DialogSelect<string>
       options={options()}
-      title={"Select variant"}
+      title={t("tui.cmd.select_variant")}
       current={local.model.variant.selected()}
       flat={true}
     />

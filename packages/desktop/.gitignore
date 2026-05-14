@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 out/
+.electron-builder-app/
 
 resources/opencode-cli*
 resources/icons

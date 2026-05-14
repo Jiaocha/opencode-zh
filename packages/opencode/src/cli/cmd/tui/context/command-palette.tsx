@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { createContext, createMemo, createSignal, useContext, type Accessor, type ParentProps } from "solid-js"
 import { DialogSelect, type DialogSelectRef } from "@tui/ui/dialog-select"
 import { useDialog, type DialogContext } from "@tui/ui/dialog"
@@ -149,13 +150,13 @@ function CommandPaletteDialog(props: { run(command: string): void }) {
         .map((option) => ({
           ...option,
           value: `suggested:${option.value}`,
-          category: "Suggested",
+          category: t("tui.common.suggested"),
         })),
       ...options(),
     ]
   }
 
-  return <DialogSelect ref={(value) => (ref = value)} title="Commands" options={list()} />
+  return <DialogSelect ref={(value) => (ref = value)} title={t("tui.command.title")} options={list()} />
 }
 
 export function useCommandSlashes(): Accessor<readonly SlashEntry[]> {

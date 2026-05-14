@@ -42,7 +42,7 @@ export function DialogModel(props: { providerID?: string }) {
             description: provider.name,
             category,
             disabled: provider.id === "opencode" && model.id.includes("-nano"),
-            footer: model.cost?.input === 0 && provider.id === "opencode" ? "Free" : undefined,
+            footer: model.cost?.input === 0 && provider.id === "opencode" ? t("tui.model.free") : undefined,
             onSelect: () => {
               onSelect(provider.id, model.id)
             },
@@ -51,12 +51,12 @@ export function DialogModel(props: { providerID?: string }) {
       })
     }
 
-    const favoriteOptions = toOptions(favorites, "Favorites")
+    const favoriteOptions = toOptions(favorites, t("tui.model.favorites"))
     const recentOptions = toOptions(
       recents.filter(
         (item) => !favorites.some((fav) => fav.providerID === item.providerID && fav.modelID === item.modelID),
       ),
-      "Recent",
+      t("tui.model.recent"),
     )
 
     const providerOptions = pipe(
@@ -75,11 +75,11 @@ export function DialogModel(props: { providerID?: string }) {
             value: { providerID: provider.id, modelID: model },
             title: info.name ?? model,
             description: favorites.some((item) => item.providerID === provider.id && item.modelID === model)
-              ? "(Favorite)"
+              ? t("tui.model.favorited")
               : undefined,
             category: connected() ? provider.name : undefined,
             disabled: provider.id === "opencode" && model.includes("-nano"),
-            footer: info.cost?.input === 0 && provider.id === "opencode" ? "Free" : undefined,
+            footer: info.cost?.input === 0 && provider.id === "opencode" ? t("tui.model.free") : undefined,
             onSelect() {
               onSelect(provider.id, model)
             },
@@ -93,7 +93,7 @@ export function DialogModel(props: { providerID?: string }) {
             return true
           }),
           sortBy(
-            (x) => x.footer !== "Free",
+            (x) => x.footer !== t("tui.model.free"),
             (x) => x.title,
           ),
         ),
@@ -105,7 +105,7 @@ export function DialogModel(props: { providerID?: string }) {
           providers(),
           map((option) => ({
             ...option,
-            category: "Popular providers",
+            category: t("tui.model.popular_providers"),
           })),
           take(6),
         )
@@ -127,7 +127,7 @@ export function DialogModel(props: { providerID?: string }) {
 
   const title = createMemo(() => {
     const value = provider()
-    if (!value) return "Select model"
+    if (!value) return t("tui.model.select_title")
     return value.name
   })
 
@@ -152,7 +152,7 @@ export function DialogModel(props: { providerID?: string }) {
       actions={[
         {
           command: "model.dialog.provider",
-          title: connected() ? "Connect provider" : "View all providers",
+          title: connected() ? t("tui.model.connect_provider") : t("tui.model.view_all_providers"),
           onTrigger() {
             dialog.replace(() => <DialogProvider />)
           },

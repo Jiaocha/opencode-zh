@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import type { TuiPlugin, TuiPluginApi } from "@opencode-ai/plugin/tui"
 import type { InternalTuiPlugin } from "../../plugin/internal"
 import { createMemo, Show } from "solid-js"
@@ -11,8 +12,8 @@ function View(props: { api: TuiPluginApi; hidden: boolean; show: boolean; connec
     commands: [
       {
         name: "tips.toggle",
-        title: props.hidden ? "Show tips" : "Hide tips",
-        category: "System",
+        title: props.hidden ? t("tui.cmd.show_tips") : t("tui.cmd.hide_tips"),
+        category: t("tui.cat.system"),
         namespace: "palette",
         run() {
           props.api.kv.set("tips_hidden", !props.api.kv.get("tips_hidden", false))

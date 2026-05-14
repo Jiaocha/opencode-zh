@@ -12,6 +12,16 @@ const channel = (() => {
 const OPENCODE_SERVER_DIST = "../opencode/dist/node"
 
 const nodePtyPkg = `@lydell/node-pty-${process.platform}-${process.arch}`
+const bundledMainDeps = [
+  "drizzle-orm",
+  "effect",
+  "electron-context-menu",
+  "electron-log",
+  "electron-store",
+  "electron-updater",
+  "electron-window-state",
+  "marked",
+]
 
 const sentry =
   process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
@@ -39,7 +49,7 @@ export default defineConfig({
       rollupOptions: {
         input: { index: "src/main/index.ts", sidecar: "src/main/sidecar.ts" },
       },
-      externalizeDeps: { include: [nodePtyPkg] },
+      externalizeDeps: { include: [nodePtyPkg], exclude: bundledMainDeps },
     },
     plugins: [
       {

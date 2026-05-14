@@ -1011,7 +1011,7 @@ export function Session() {
     {
       title: t("tui.session.next_child_session"),
       value: "session.child.next",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       enabled: !!session()?.parentID,
       run: childSessionHandler(() => {
@@ -1022,7 +1022,7 @@ export function Session() {
     {
       title: t("tui.session.previous_child_session"),
       value: "session.child.previous",
-      category: "Session",
+      category: t("tui.cat.session"),
       hidden: true,
       enabled: !!session()?.parentID,
       run: childSessionHandler(() => {

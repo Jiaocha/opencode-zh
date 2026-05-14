@@ -11,12 +11,12 @@ import { useSDK } from "@tui/context/sdk"
 function Status(props: { enabled: boolean; loading: boolean }) {
   const { theme } = useTheme()
   if (props.loading) {
-    return <span style={{ fg: theme.textMuted }}>⋯ Loading</span>
+    return <span style={{ fg: theme.textMuted }}>{t("tui.mcp.status_loading")}</span>
   }
   if (props.enabled) {
-    return <span style={{ fg: theme.success, attributes: TextAttributes.BOLD }}>✓ Enabled</span>
+    return <span style={{ fg: theme.success, attributes: TextAttributes.BOLD }}>{t("tui.mcp.status_enabled")}</span>
   }
-  return <span style={{ fg: theme.textMuted }}>○ Disabled</span>
+  return <span style={{ fg: theme.textMuted }}>{t("tui.mcp.status_disabled")}</span>
 }
 
 export function DialogMcp() {
@@ -38,7 +38,7 @@ export function DialogMcp() {
       map(([name, status]) => ({
         value: name,
         title: name,
-        description: status.status === "failed" ? "failed" : status.status,
+        description: status.status === "failed" ? t("tui.mcp.status_failed") : status.status,
         footer: <Status enabled={local.mcp.isEnabled(name)} loading={loadingMcp === name} />,
         category: undefined,
       })),
@@ -61,10 +61,10 @@ export function DialogMcp() {
           if (status.data) {
             sync.set("mcp", status.data)
           } else {
-            console.error("Failed to refresh MCP status: no data returned")
+            console.error(t("tui.mcp.refresh_status_failed"))
           }
         } catch (error) {
-          console.error("Failed to toggle MCP:", error)
+          console.error(t("tui.mcp.toggle_failed"), error)
         } finally {
           setLoading(null)
         }
@@ -75,7 +75,7 @@ export function DialogMcp() {
   return (
     <DialogSelect
       ref={setRef}
-      title="MCPs"
+      title={t("tui.mcp.title")}
       options={options()}
       actions={actions()}
       onSelect={(_option) => {

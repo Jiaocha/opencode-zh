@@ -311,7 +311,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
     dispose: () => attention.dispose(),
   })
     .catch((error) => {
-      console.error("Failed to load TUI plugins", error)
+      console.error(t("tui.error.load_plugins_failed"), error)
     })
     .finally(() => {
       setReady(true)
@@ -381,7 +381,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         if (!providerID || !modelID)
           return toast.show({
             variant: "warning",
-            message: `Invalid model format: ${args.model}`,
+            message: t("tui.error.invalid_model_format", { model: args.model }),
             duration: 3000,
           })
         local.model.set({ providerID, modelID }, { recent: true })
@@ -517,7 +517,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         name: "model.list",
         title: t("tui.cmd.switch_model"),
         suggested: true,
-        category: "Agent",
+        category: t("tui.cat.agent"),
         slashName: "models",
         run: () => {
           dialog.replace(() => <DialogModel />)
@@ -526,7 +526,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "model.cycle_recent",
         title: t("tui.cmd.model_cycle"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: true,
         run: () => {
           local.model.cycle(1)
@@ -535,7 +535,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "model.cycle_recent_reverse",
         title: t("tui.cmd.model_cycle_reverse"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: true,
         run: () => {
           local.model.cycle(-1)
@@ -544,7 +544,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "model.cycle_favorite",
         title: t("tui.cmd.favorite_cycle"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: true,
         run: () => {
           local.model.cycleFavorite(1)
@@ -553,7 +553,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "model.cycle_favorite_reverse",
         title: t("tui.cmd.favorite_cycle_reverse"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: true,
         run: () => {
           local.model.cycleFavorite(-1)
@@ -562,7 +562,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "agent.list",
         title: t("tui.cmd.switch_agent"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         slashName: "agents",
         run: () => {
           dialog.replace(() => <DialogAgent />)
@@ -571,7 +571,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "mcp.list",
         title: t("tui.cmd.toggle_mcps"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         slashName: "mcps",
         run: () => {
           dialog.replace(() => <DialogMcp />)
@@ -580,7 +580,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "agent.cycle",
         title: t("tui.cmd.agent_cycle"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: true,
         run: () => {
           local.agent.move(1)
@@ -589,7 +589,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "variant.cycle",
         title: t("tui.cmd.variant_cycle"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         run: () => {
           local.model.variant.cycle()
         },
@@ -597,7 +597,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "variant.list",
         title: t("tui.cmd.switch_model_variant"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: local.model.variant.list().length === 0,
         slashName: "variants",
         run: () => {
@@ -607,7 +607,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       {
         name: "agent.cycle.reverse",
         title: t("tui.cmd.agent_cycle_reverse"),
-        category: "Agent",
+        category: t("tui.cat.agent"),
         hidden: true,
         run: () => {
           local.agent.move(-1)
@@ -621,7 +621,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         run: () => {
           dialog.replace(() => <DialogProviderList />)
         },
-        category: "Provider",
+        category: t("tui.cat.provider"),
       },
       ...(sync.data.console_state.switchableOrgCount > 1
         ? [
@@ -634,7 +634,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
               run: () => {
                 dialog.replace(() => <DialogConsoleOrg />)
               },
-              category: "Provider",
+              category: t("tui.cat.provider"),
             },
           ]
         : []),
@@ -658,7 +658,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       {
         name: "theme.switch_mode",
-        title: mode() === "dark" ? "Switch to light mode" : "Switch to dark mode",
+        title: mode() === "dark" ? t("tui.cmd.switch_to_light_mode") : t("tui.cmd.switch_to_dark_mode"),
         run: () => {
           setMode(mode() === "dark" ? "light" : "dark")
           dialog.clear()
@@ -667,7 +667,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       {
         name: "theme.mode.lock",
-        title: locked() ? "Unlock theme mode" : "Lock theme mode",
+        title: locked() ? t("tui.cmd.unlock_theme_mode") : t("tui.cmd.lock_theme_mode"),
         run: () => {
           if (locked()) unlock()
           else lock()
@@ -773,7 +773,9 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       {
         name: "app.toggle.file_context",
-        title: kv.get("file_context_enabled", true) ? t("tui.cmd.disable_file_context") : t("tui.cmd.enable_file_context"),
+        title: kv.get("file_context_enabled", true)
+          ? t("tui.cmd.disable_file_context")
+          : t("tui.cmd.enable_file_context"),
         category: t("tui.cat.system"),
         run: () => {
           kv.set("file_context_enabled", !kv.get("file_context_enabled", true))
@@ -782,7 +784,10 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       {
         name: "app.toggle.diffwrap",
-        title: kv.get("diff_wrap_mode", "word") === "word" ? t("tui.cmd.disable_diff_wrapping") : t("tui.cmd.enable_diff_wrapping"),
+        title:
+          kv.get("diff_wrap_mode", "word") === "word"
+            ? t("tui.cmd.disable_diff_wrapping")
+            : t("tui.cmd.enable_diff_wrapping"),
         category: t("tui.cat.system"),
         run: () => {
           const current = kv.get("diff_wrap_mode", "word")
@@ -898,8 +903,8 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
 
     const choice = await DialogConfirm.show(
       dialog,
-      `Update Available`,
-      `A new release v${version} is available. Would you like to update now?`,
+      t("tui.update.available_title"),
+      t("tui.update.available_message", { version }),
       "skip",
     )
 
@@ -912,7 +917,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
 
     toast.show({
       variant: "info",
-      message: `Updating to v${version}...`,
+      message: t("tui.update.updating", { version }),
       duration: 30000,
     })
 
@@ -930,8 +935,8 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
 
     await DialogAlert.show(
       dialog,
-      "Update Complete",
-      `Successfully updated to OpenCode v${result.data.version}. Please restart the application.`,
+      t("tui.update.complete_title"),
+      t("tui.update.complete_message", { version: result.data.version }),
     )
 
     void exit()

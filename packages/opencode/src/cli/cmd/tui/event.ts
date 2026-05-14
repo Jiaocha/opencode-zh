@@ -40,14 +40,14 @@ export const TuiEvent = {
       message: Schema.String,
       variant: Schema.Literals(["info", "success", "warning", "error"]),
       duration: PositiveInt.pipe(Schema.withDecodingDefault(Effect.succeed(DEFAULT_TOAST_DURATION))).annotate({
-        description: "Duration in milliseconds",
+        description: "持续时间，单位为毫秒",
       }),
     }),
   ),
   SessionSelect: BusEvent.define(
     "tui.session.select",
     Schema.Struct({
-      sessionID: SessionID.annotate({ description: "Session ID to navigate to" }),
+      sessionID: SessionID.annotate({ description: "要跳转的会话 ID" }),
     }),
   ),
 }

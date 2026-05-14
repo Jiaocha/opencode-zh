@@ -20,12 +20,12 @@ export function DialogMessage(props: {
 
   return (
     <DialogSelect
-      title="Message Actions"
+      title={t("tui.session.message_actions")}
       options={[
         {
           title: t("tui.session.revert"),
           value: "session.revert",
-          description: "undo messages and file changes",
+          description: t("tui.session.revert_message_desc"),
           onSelect: (dialog) => {
             const msg = message()
             if (!msg) return
@@ -56,7 +56,7 @@ export function DialogMessage(props: {
         {
           title: t("tui.common.copy"),
           value: "message.copy",
-          description: "message text to clipboard",
+          description: t("tui.session.copy_message_desc"),
           onSelect: async (dialog) => {
             const msg = message()
             if (!msg) return
@@ -76,7 +76,7 @@ export function DialogMessage(props: {
         {
           title: t("cli.cmd.tui.fork"),
           value: "session.fork",
-          description: "create a new session",
+          description: t("tui.session.fork_message_desc"),
           onSelect: async (dialog) => {
             const result = await sdk.client.session.fork({
               sessionID: props.sessionID,

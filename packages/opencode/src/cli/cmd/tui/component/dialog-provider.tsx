@@ -56,9 +56,9 @@ export function providerOptions(list: { id: string; name: string }[]): ProviderO
         value: provider.id,
         providerID: provider.id,
         description: {
-          opencode: "(Recommended)",
-          anthropic: "(API key)",
-          openai: "(ChatGPT Plus/Pro or API key)",
+          opencode: t("tui.provider.recommended"),
+          anthropic: t("tui.provider.api_key"),
+          openai: t("tui.provider.openai_auth"),
           "opencode-go": t("tui.provider.low_cost"),
         }[provider.id],
         category: provider.id in PROVIDER_PRIORITY ? t("tui.provider.popular") : t("tui.cat.provider"),
@@ -91,11 +91,7 @@ export function createDialogProviderOptions() {
   async function promptCustomProviderID(): Promise<string | undefined> {
     const value = await DialogPrompt.show(dialog, t("tui.common.other"), {
       placeholder: t("tui.provider.id_placeholder"),
-      description: () => (
-        <text fg={theme.textMuted}>
-          {t("tui.provider.custom_config_hint")}
-        </text>
-      ),
+      description: () => <text fg={theme.textMuted}>{t("tui.provider.custom_config_hint")}</text>,
     })
     if (value === null) return
 
@@ -122,7 +118,9 @@ export function createDialogProviderOptions() {
             async onSelect() {
               const providerID = await promptCustomProviderID()
               if (!providerID) return
-              return dialog.replace(() => <ApiMethod providerID={providerID} title={t("tui.provider.api_key")} custom />)
+              return dialog.replace(() => (
+                <ApiMethod providerID={providerID} title={t("tui.provider.api_key")} custom />
+              ))
             },
           }
         }
@@ -357,22 +355,14 @@ function ApiMethod(props: ApiMethodProps) {
         {
           opencode: (
             <box gap={1}>
-              <text fg={theme.textMuted}>
-                {t("tui.provider.zen_desc")}
-              </text>
-              <text fg={theme.text}>
-                {t("tui.provider.zen_get_key", { url: "https://opencode.ai/zen" })}
-              </text>
+              <text fg={theme.textMuted}>{t("tui.provider.zen_desc")}</text>
+              <text fg={theme.text}>{t("tui.provider.zen_get_key", { url: "https://opencode.ai/zen" })}</text>
             </box>
           ),
           "opencode-go": (
             <box gap={1}>
-              <text fg={theme.textMuted}>
-                {t("tui.provider.go_desc")}
-              </text>
-              <text fg={theme.text}>
-                {t("tui.provider.go_enable", { url: "https://opencode.ai/zen" })}
-              </text>
+              <text fg={theme.textMuted}>{t("tui.provider.go_desc")}</text>
+              <text fg={theme.text}>{t("tui.provider.go_enable", { url: "https://opencode.ai/zen" })}</text>
             </box>
           ),
         }[props.providerID] ?? undefined

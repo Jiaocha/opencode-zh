@@ -422,7 +422,7 @@ export function Prompt(props: PromptProps) {
       {
         title: t("tui.prompt.submit_prompt"),
         name: "prompt.submit",
-        category: "Prompt",
+        category: t("tui.cat.prompt"),
         hidden: true,
         run: async () => {
           if (!input.focused) return
@@ -802,7 +802,7 @@ export function Prompt(props: PromptProps) {
       {
         title: t("tui.prompt.stash_prompt"),
         name: "prompt.stash",
-        category: "Prompt",
+        category: t("tui.cat.prompt"),
         enabled: !!store.prompt.input,
         run: () => {
           if (!store.prompt.input) return
@@ -820,7 +820,7 @@ export function Prompt(props: PromptProps) {
       {
         title: t("tui.prompt.stash_pop"),
         name: "prompt.stash.pop",
-        category: "Prompt",
+        category: t("tui.cat.prompt"),
         enabled: stash.list().length > 0,
         run: () => {
           const entry = stash.pop()
@@ -836,7 +836,7 @@ export function Prompt(props: PromptProps) {
       {
         title: t("tui.prompt.stash_list"),
         name: "prompt.stash.list",
-        category: "Prompt",
+        category: t("tui.cat.prompt"),
         enabled: stash.list().length > 0,
         run: () => {
           dialog.replace(() => (
@@ -908,7 +908,14 @@ export function Prompt(props: PromptProps) {
     return {
       target: inputTarget,
       enabled: inputTarget() !== undefined && store.mode === "shell",
-      bindings: [{ key: "escape", desc: t("tui.prompt.exit_shell_mode"), group: t("tui.cat.prompt"), cmd: () => setStore("mode", "normal") }],
+      bindings: [
+        {
+          key: "escape",
+          desc: t("tui.prompt.exit_shell_mode"),
+          group: t("tui.cat.prompt"),
+          cmd: () => setStore("mode", "normal"),
+        },
+      ],
     }
   })
 
@@ -919,7 +926,14 @@ export function Prompt(props: PromptProps) {
         cursorVersion()
         return inputTarget() !== undefined && store.mode === "shell" && input?.visualCursor.offset === 0
       })(),
-      bindings: [{ key: "backspace", desc: t("tui.prompt.exit_shell_mode"), group: t("tui.cat.prompt"), cmd: () => setStore("mode", "normal") }],
+      bindings: [
+        {
+          key: "backspace",
+          desc: t("tui.prompt.exit_shell_mode"),
+          group: t("tui.cat.prompt"),
+          cmd: () => setStore("mode", "normal"),
+        },
+      ],
     }
   })
 
@@ -1282,7 +1296,7 @@ export function Prompt(props: PromptProps) {
         if (mime === "image/svg+xml") {
           const content = await Filesystem.readText(filepath).catch(() => {})
           if (content) {
-            pasteText(content, `[SVG: ${filename ?? "image"}]`)
+            pasteText(content, t("tui.prompt.svg_attachment", { filename: filename ?? t("tui.prompt.image") }))
             return
           }
         }
@@ -1308,7 +1322,7 @@ export function Prompt(props: PromptProps) {
       (lineCount >= 3 || pastedContent.length > 150) &&
       kv.get("paste_summary_enabled", !sync.data.config.experimental?.disable_paste_summary)
     ) {
-      pasteText(pastedContent, `[Pasted ~${lineCount} lines]`)
+      pasteText(pastedContent, t("tui.prompt.pasted_lines", { count: lineCount }))
       return
     }
 
@@ -1330,7 +1344,9 @@ export function Prompt(props: PromptProps) {
       if (pdf) return x.mime === "application/pdf"
       return x.mime.startsWith("image/")
     }).length
-    const virtualText = pdf ? `[PDF ${count + 1}]` : `[Image ${count + 1}]`
+    const virtualText = pdf
+      ? t("tui.prompt.pdf_attachment", { count: count + 1 })
+      : t("tui.prompt.image_attachment", { count: count + 1 })
     const extmarkEnd = extmarkStart + virtualText.length
     const textToInsert = virtualText + " "
 
@@ -1734,11 +1750,7 @@ export function Prompt(props: PromptProps) {
                             type: item.workspaceType,
                             dots: ".".repeat(workspaceCreatingDots()),
                           })
-                        return (
-                          <>
-                            {t("tui.workspace.new_type", { type: item.workspaceType })}
-                          </>
-                        )
+                        return <>{t("tui.workspace.new_type", { type: item.workspaceType })}</>
                       }
                       return (
                         <>

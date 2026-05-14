@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { RGBA, TextAttributes } from "@opentui/core"
 import open from "open"
 import { createSignal } from "solid-js"
@@ -48,25 +49,25 @@ export function DialogRetryAction(props: DialogRetryActionProps) {
     bindings: [
       {
         key: "left",
-        desc: "Previous retry option",
+        desc: t("tui.retry.previous_option"),
         group: "Dialog",
         cmd: () => setSelected((value) => (value === "action" ? "dismiss" : "action")),
       },
       {
         key: "right",
-        desc: "Next retry option",
+        desc: t("tui.retry.next_option"),
         group: "Dialog",
         cmd: () => setSelected((value) => (value === "action" ? "dismiss" : "action")),
       },
       {
         key: "tab",
-        desc: "Next retry option",
+        desc: t("tui.retry.next_option"),
         group: "Dialog",
         cmd: () => setSelected((value) => (value === "action" ? "dismiss" : "action")),
       },
       {
         key: "return",
-        desc: "Confirm retry option",
+        desc: t("tui.retry.confirm_option"),
         group: "Dialog",
         cmd: () => {
           if (selected() === "action") runAction(props, dialog)
@@ -123,7 +124,7 @@ export function DialogRetryAction(props: DialogRetryActionProps) {
               bg={selected() === "dismiss" ? undefined : textBg()}
               attributes={selected() === "dismiss" ? TextAttributes.BOLD : undefined}
             >
-              don't show again
+              {t("tui.retry.dont_show_again")}
             </text>
           </box>
           <box

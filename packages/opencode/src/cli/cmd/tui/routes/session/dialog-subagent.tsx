@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useRoute } from "@tui/context/route"
 
@@ -6,12 +7,12 @@ export function DialogSubagent(props: { sessionID: string }) {
 
   return (
     <DialogSelect
-      title="Subagent Actions"
+      title={t("tui.session.subagent_actions")}
       options={[
         {
-          title: "Open",
+          title: t("tui.common.open"),
           value: "subagent.view",
-          description: "the subagent's session",
+          description: t("tui.session.subagent_open_desc"),
           onSelect: (dialog) => {
             route.navigate({
               type: "session",

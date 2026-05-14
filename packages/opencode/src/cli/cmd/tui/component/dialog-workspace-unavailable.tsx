@@ -1,3 +1,4 @@
+import { t } from "@/i18n"
 import { TextAttributes } from "@opentui/core"
 import { createStore } from "solid-js/store"
 import { For } from "solid-js"
@@ -25,9 +26,14 @@ export function DialogWorkspaceUnavailable(props: { onRestore?: () => boolean | 
 
   useBindings(() => ({
     bindings: [
-      { key: "return", desc: "Confirm workspace option", group: "Dialog", cmd: () => void confirm() },
-      { key: "left", desc: "Cancel workspace restore", group: "Dialog", cmd: () => setStore("active", "cancel") },
-      { key: "right", desc: "Restore workspace", group: "Dialog", cmd: () => setStore("active", "restore") },
+      { key: "return", desc: t("tui.workspace.confirm_option"), group: "Dialog", cmd: () => void confirm() },
+      {
+        key: "left",
+        desc: t("tui.workspace.cancel_restore"),
+        group: "Dialog",
+        cmd: () => setStore("active", "cancel"),
+      },
+      { key: "right", desc: t("tui.workspace.restore"), group: "Dialog", cmd: () => setStore("active", "restore") },
     ],
   }))
 
@@ -35,17 +41,17 @@ export function DialogWorkspaceUnavailable(props: { onRestore?: () => boolean | 
     <box paddingLeft={2} paddingRight={2} gap={1}>
       <box flexDirection="row" justifyContent="space-between">
         <text attributes={TextAttributes.BOLD} fg={theme.text}>
-          Workspace Unavailable
+          {t("tui.workspace.unavailable_title")}
         </text>
         <text fg={theme.textMuted} onMouseUp={() => dialog.clear()}>
           esc
         </text>
       </box>
       <text fg={theme.textMuted} wrapMode="word">
-        This session is attached to a workspace that is no longer available.
+        {t("tui.workspace.unavailable_message")}
       </text>
       <text fg={theme.textMuted} wrapMode="word">
-        Would you like to restore this session into a new workspace?
+        {t("tui.workspace.restore_prompt")}
       </text>
       <box flexDirection="row" justifyContent="flex-end" paddingBottom={1} gap={1}>
         <For each={options}>
@@ -59,7 +65,9 @@ export function DialogWorkspaceUnavailable(props: { onRestore?: () => boolean | 
                 void confirm()
               }}
             >
-              <text fg={item === store.active ? theme.selectedListItemText : theme.textMuted}>{item}</text>
+              <text fg={item === store.active ? theme.selectedListItemText : theme.textMuted}>
+                {item === "cancel" ? t("tui.common.cancel") : t("tui.workspace.restore")}
+              </text>
             </box>
           )}
         </For>

@@ -227,8 +227,8 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           const value = currentModel()
           if (!value) {
             return {
-              provider: "Connect a provider",
-              model: "No provider selected",
+              provider: t("tui.model.connect_provider"),
+              model: t("tui.model.no_provider"),
               reasoning: false,
             }
           }
@@ -593,7 +593,10 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       if (isModelValid(value.model)) return
       toast.show({
         variant: "warning",
-        message: `Agent ${value.name}'s configured model ${value.model.providerID}/${value.model.modelID} is not valid`,
+        message: t("tui.agent.invalid_model", {
+          agent: value.name,
+          model: `${value.model.providerID}/${value.model.modelID}`,
+        }),
         duration: 3000,
       })
     })

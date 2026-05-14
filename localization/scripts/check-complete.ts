@@ -31,6 +31,19 @@ const listMdx = async (dir: string) => {
     .sort()
 }
 
+const listSourceFiles = async (dir: string): Promise<string[]> => {
+  const entries = await fs.readdir(dir, { withFileTypes: true })
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const target = path.join(dir, entry.name)
+      if (entry.isDirectory()) return listSourceFiles(target)
+      if (entry.isFile() && /\.(tsx?|jsx?)$/.test(entry.name)) return [target]
+      return []
+    }),
+  )
+  return files.flat().sort()
+}
+
 async function main() {
   const repo = await findRepo(process.cwd())
   const loc = path.join(repo, "localization")
@@ -111,6 +124,75 @@ async function main() {
     }
     if (copiedDocs.length > 0) failures.push(`中文文档疑似直接复制英文原文: ${copiedDocs.join(", ")}`)
     if (noHanDocs.length > 0) failures.push(`中文文档缺少中文字符: ${noHanDocs.join(", ")}`)
+  }
+
+  const tuiRoot = path.join(repo, "packages/opencode/src/cli/cmd/tui")
+  if (await exists(tuiRoot)) {
+    const blockedTuiPhrases = [
+      "Select agent",
+      "Select model",
+      'title="Commands"',
+      'title: "Commands"',
+      'category: "Suggested"',
+      'category: "Prompt"',
+      'category: "Session"',
+      "Popular providers",
+      "Message Actions",
+      "Subagent Actions",
+      "undo messages and file changes",
+      "message text to clipboard",
+      "create a new session",
+      "the subagent's session",
+      "Show tips",
+      "Hide tips",
+      "MCPs",
+      "Search skills",
+      "Failed to load TUI plugins",
+      "Failed to refresh MCP status",
+      "Failed to toggle MCP",
+      "Failed to read KV state",
+      "Failed to write KV state",
+      "Loading plugins",
+      "Finishing startup",
+      "Update Available",
+      "Switch to light mode",
+      "Switch to dark mode",
+      "Rename Session",
+      "Previous retry option",
+      "Next retry option",
+      "Confirm retry option",
+      "Confirm workspace option",
+      "Cancel workspace restore",
+      "Restore workspace",
+      "Workspace Unavailable",
+      "Would you like to restore",
+      "This session is attached to a workspace",
+      "don't show again",
+      "Invalid model format",
+      "Invalid session ID",
+      "Connect a provider",
+      "No provider selected",
+      "Failed to create workspace",
+      "LSPs are disabled",
+      "Session aborted",
+      "Session done",
+      "Question needs input",
+      "Permission needs input",
+      "[Pasted ~",
+      "[Image ",
+      "● Tip",
+    ]
+    const matches: string[] = []
+    for (const file of await listSourceFiles(tuiRoot)) {
+      const content = await fs.readFile(file, "utf8")
+      for (const phrase of blockedTuiPhrases) {
+        if (!content.includes(phrase)) continue
+        matches.push(`${path.relative(repo, file).replaceAll("\\", "/")}: ${phrase}`)
+      }
+    }
+    if (matches.length > 0) {
+      failures.push(`TUI 仍存在重点英文漏译 ${matches.length} 处: ${matches.slice(0, 30).join("; ")}`)
+    }
   }
 
   if (failures.length > 0) {

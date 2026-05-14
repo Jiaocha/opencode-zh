@@ -1,4 +1,5 @@
 import { Global } from "@opencode-ai/core/global"
+import { t } from "@/i18n"
 import { Filesystem } from "@/util/filesystem"
 import { Flock } from "@opencode-ai/core/util/flock"
 import { rename, rm } from "fs/promises"
@@ -34,7 +35,7 @@ export const { use: useKV, provider: KVProvider } = createSimpleContext({
         setStore(x)
       })
       .catch((error) => {
-        console.error("Failed to read KV state", { filePath, error })
+        console.error(t("tui.error.kv_read_failed"), { filePath, error })
       })
       .finally(() => {
         setReady(true)
@@ -67,7 +68,7 @@ export const { use: useKV, provider: KVProvider } = createSimpleContext({
         write = write
           .then(() => Flock.withLock(lock, () => writeSnapshot(snapshot)))
           .catch((error) => {
-            console.error("Failed to write KV state", { filePath, error })
+            console.error(t("tui.error.kv_write_failed"), { filePath, error })
           })
       },
     }

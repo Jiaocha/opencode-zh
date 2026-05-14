@@ -1,4 +1,5 @@
 import { createOpencodeClient } from "@opencode-ai/sdk/v2"
+import { t } from "@/i18n"
 import { SessionID } from "@/session/schema"
 import { Schema } from "effect"
 
@@ -17,7 +18,8 @@ export async function validateSession(input: {
   try {
     sessionID = decodeSessionID(input.sessionID)
   } catch (error) {
-    throw new Error(`Invalid session ID: ${error instanceof Error ? error.message : "unknown error"}`, { cause: error })
+    const message = error instanceof Error ? error.message : t("tui.error.unknown")
+    throw new Error(t("tui.error.invalid_session_id", { message }), { cause: error })
   }
 
   await createOpencodeClient({
