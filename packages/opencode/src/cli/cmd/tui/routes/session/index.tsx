@@ -2021,8 +2021,9 @@ function Task(props: ToolProps<typeof TaskTool>) {
 
   const content = createMemo(() => {
     if (!props.input.description) return ""
-    const type = props.input.subagent_type ? Locale.titlecase(props.input.subagent_type) : t("tui.tool.task_general")
-    let content = [`${t("tui.tool.task_title", { type })} — ${props.input.description}`]
+    const description =
+      props.metadata.background === true ? `${props.input.description} (background)` : props.input.description
+    let content = [`${Locale.titlecase(props.input.subagent_type ?? "General")} Task — ${description}`]
 
     if (isRunning() && tools().length > 0) {
       if (current()) {
@@ -2033,7 +2034,11 @@ function Task(props: ToolProps<typeof TaskTool>) {
     }
 
     if (props.part.state.status === "completed") {
-      content.push(`└ ${t("tui.tool.toolcalls", { count: tools().length })} · ${Locale.duration(duration())}`)
+      content.push(
+        props.metadata.background === true
+          ? `└ ${tools().length} toolcalls`
+          : `└ ${tools().length} toolcalls · ${Locale.duration(duration())}`,
+      )
     }
 
     return content.join("\n")
