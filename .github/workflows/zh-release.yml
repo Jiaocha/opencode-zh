@@ -316,7 +316,7 @@ jobs:
       - name: Setup Bun
         uses: ./.github/actions/setup-bun
         with:
-          install-flags: ${{ runner.os == 'Windows' && '' || '--linker hoisted' }}
+          install-flags: ${{ runner.os != 'Windows' && '--linker hoisted' || '' }}
 
       - name: Install Linux packaging dependencies
         if: runner.os == 'Linux'
