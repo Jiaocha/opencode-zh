@@ -22,6 +22,7 @@ import { WorkspaceApi } from "./groups/workspace"
 import { V2Api } from "./groups/v2"
 import { Authorization } from "./middleware/authorization"
 import { SchemaErrorMiddleware } from "./middleware/schema-error"
+import "../../../projectors-init"
 
 // SSE event schemas built from the BusEvent/SyncEvent registries.
 const EventSchema = Schema.Union(BusEvent.effectPayloads()).annotate({ identifier: "Event" })
