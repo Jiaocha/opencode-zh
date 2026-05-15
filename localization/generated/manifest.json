@@ -9,7 +9,7 @@
     "packages/opencode/src/i18n/zh-cn.ts",
     "packages/opencode/src/i18n/index.ts"
   ],
-  "appliedAt": "2026-05-15T01:42:03.942Z",
+  "appliedAt": "2026-05-15T02:19:08.058Z",
   "keysCount": 1057,
   "keys": [
     "cli.cmd.account.describe",
