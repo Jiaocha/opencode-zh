@@ -42,8 +42,6 @@ export type Event =
   | EventPtyDeleted
   | EventInstallationUpdated
   | EventInstallationUpdateAvailable
-  | EventServerConnected
-  | EventGlobalDisposed
   | EventMessageUpdated
   | EventMessageRemoved
   | EventMessagePartUpdated
@@ -76,8 +74,9 @@ export type Event =
   | EventSessionNextCompactionStarted
   | EventSessionNextCompactionDelta
   | EventSessionNextCompactionEnded
+  | EventServerConnected
+  | EventGlobalDisposed
   | EventCatalogModelUpdated
-  | EventSessionNextToolProgress
 
 export type OAuth = {
   type: "oauth"
@@ -827,8 +826,6 @@ export type GlobalEvent = {
     | EventPtyDeleted
     | EventInstallationUpdated
     | EventInstallationUpdateAvailable
-    | EventServerConnected
-    | EventGlobalDisposed
     | EventMessageUpdated
     | EventMessageRemoved
     | EventMessagePartUpdated
@@ -861,8 +858,9 @@ export type GlobalEvent = {
     | EventSessionNextCompactionStarted
     | EventSessionNextCompactionDelta
     | EventSessionNextCompactionEnded
+    | EventServerConnected
+    | EventGlobalDisposed
     | EventCatalogModelUpdated
-    | EventSessionNextToolProgress
     | SyncEventMessageUpdated
     | SyncEventMessageRemoved
     | SyncEventMessagePartUpdated
@@ -882,20 +880,20 @@ export type GlobalEvent = {
     | SyncEventSessionNextTextStarted
     | SyncEventSessionNextTextDelta
     | SyncEventSessionNextTextEnded
+    | SyncEventSessionNextReasoningStarted
+    | SyncEventSessionNextReasoningDelta
+    | SyncEventSessionNextReasoningEnded
     | SyncEventSessionNextToolInputStarted
     | SyncEventSessionNextToolInputDelta
     | SyncEventSessionNextToolInputEnded
     | SyncEventSessionNextToolCalled
+    | SyncEventSessionNextToolProgress
     | SyncEventSessionNextToolSuccess
     | SyncEventSessionNextToolFailed
-    | SyncEventSessionNextReasoningStarted
-    | SyncEventSessionNextReasoningDelta
-    | SyncEventSessionNextReasoningEnded
     | SyncEventSessionNextRetried
     | SyncEventSessionNextCompactionStarted
     | SyncEventSessionNextCompactionDelta
     | SyncEventSessionNextCompactionEnded
-    | SyncEventSessionNextToolProgress
 }
 
 /**
@@ -2183,6 +2181,47 @@ export type SyncEventSessionNextTextEnded = {
   }
 }
 
+export type SyncEventSessionNextReasoningStarted = {
+  type: "sync"
+  name: "session.next.reasoning.started.1"
+  id: string
+  seq: number
+  aggregateID: "sessionID"
+  data: {
+    timestamp: number
+    sessionID: string
+    reasoningID: string
+  }
+}
+
+export type SyncEventSessionNextReasoningDelta = {
+  type: "sync"
+  name: "session.next.reasoning.delta.1"
+  id: string
+  seq: number
+  aggregateID: "sessionID"
+  data: {
+    timestamp: number
+    sessionID: string
+    reasoningID: string
+    delta: string
+  }
+}
+
+export type SyncEventSessionNextReasoningEnded = {
+  type: "sync"
+  name: "session.next.reasoning.ended.1"
+  id: string
+  seq: number
+  aggregateID: "sessionID"
+  data: {
+    timestamp: number
+    sessionID: string
+    reasoningID: string
+    text: string
+  }
+}
+
 export type SyncEventSessionNextToolInputStarted = {
   type: "sync"
   name: "session.next.tool.input.started.1"
@@ -2248,6 +2287,23 @@ export type SyncEventSessionNextToolCalled = {
   }
 }
 
+export type SyncEventSessionNextToolProgress = {
+  type: "sync"
+  name: "session.next.tool.progress.1"
+  id: string
+  seq: number
+  aggregateID: "sessionID"
+  data: {
+    timestamp: number
+    sessionID: string
+    callID: string
+    structured: {
+      [key: string]: unknown
+    }
+    content: Array<ToolTextContent | ToolFileContent>
+  }
+}
+
 export type SyncEventSessionNextToolSuccess = {
   type: "sync"
   name: "session.next.tool.success.1"
@@ -2288,47 +2344,6 @@ export type SyncEventSessionNextToolFailed = {
         [key: string]: unknown
       }
     }
-  }
-}
-
-export type SyncEventSessionNextReasoningStarted = {
-  type: "sync"
-  name: "session.next.reasoning.started.1"
-  id: string
-  seq: number
-  aggregateID: "sessionID"
-  data: {
-    timestamp: number
-    sessionID: string
-    reasoningID: string
-  }
-}
-
-export type SyncEventSessionNextReasoningDelta = {
-  type: "sync"
-  name: "session.next.reasoning.delta.1"
-  id: string
-  seq: number
-  aggregateID: "sessionID"
-  data: {
-    timestamp: number
-    sessionID: string
-    reasoningID: string
-    delta: string
-  }
-}
-
-export type SyncEventSessionNextReasoningEnded = {
-  type: "sync"
-  name: "session.next.reasoning.ended.1"
-  id: string
-  seq: number
-  aggregateID: "sessionID"
-  data: {
-    timestamp: number
-    sessionID: string
-    reasoningID: string
-    text: string
   }
 }
 
@@ -2383,23 +2398,6 @@ export type SyncEventSessionNextCompactionEnded = {
     sessionID: string
     text: string
     include?: string
-  }
-}
-
-export type SyncEventSessionNextToolProgress = {
-  type: "sync"
-  name: "session.next.tool.progress.1"
-  id: string
-  seq: number
-  aggregateID: string
-  data: {
-    timestamp: number
-    sessionID: string
-    callID: string
-    structured: {
-      [key: string]: unknown
-    }
-    content: Array<ToolTextContent | ToolFileContent>
   }
 }
 
@@ -2680,22 +2678,6 @@ export type EventInstallationUpdateAvailable = {
   type: "installation.update-available"
   properties: {
     version: string
-  }
-}
-
-export type EventServerConnected = {
-  id: string
-  type: "server.connected"
-  properties: {
-    [key: string]: unknown
-  }
-}
-
-export type EventGlobalDisposed = {
-  id: string
-  type: "global.disposed"
-  properties: {
-    [key: string]: unknown
   }
 }
 
@@ -3131,6 +3113,22 @@ export type EventSessionNextCompactionEnded = {
   }
 }
 
+export type EventServerConnected = {
+  id: string
+  type: "server.connected"
+  properties: {
+    [key: string]: unknown
+  }
+}
+
+export type EventGlobalDisposed = {
+  id: string
+  type: "global.disposed"
+  properties: {
+    [key: string]: unknown
+  }
+}
+
 export type ModelV2Info = {
   id: string
   apiID: string
@@ -3234,20 +3232,6 @@ export type EventCatalogModelUpdated = {
   type: "catalog.model.updated"
   properties: {
     model: ModelV2Info
-  }
-}
-
-export type EventSessionNextToolProgress = {
-  id: string
-  type: "session.next.tool.progress"
-  properties: {
-    timestamp: number
-    sessionID: string
-    callID: string
-    structured: {
-      [key: string]: unknown
-    }
-    content: Array<ToolTextContent | ToolFileContent>
   }
 }
 

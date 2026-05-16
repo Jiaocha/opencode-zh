@@ -1,7 +1,6 @@
 import { Config } from "@/config/config"
 import { BusEvent } from "@/bus/bus-event"
 import { SyncEvent } from "@/sync"
-import "@/event-v2-bridge"
 import "@/server/event"
 import "../../../../projectors-init"
 import { Schema } from "effect"
