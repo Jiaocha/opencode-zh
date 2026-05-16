@@ -47,6 +47,7 @@ async function main() {
   await run(repo, [path.join(loc, "scripts/verify-localization.ts")], "verify")
   await run(repo, [path.join(loc, "scripts/extract-tui.ts")], "scan")
   await run(repo, [path.join(loc, "scripts/patch-source.ts")], "patch")
+  await run(path.join(repo, "packages/sdk/js"), ["run", "build"], "sdk build")
   await run(path.join(repo, "packages/opencode"), ["typecheck"], "typecheck")
 
   process.stdout.write("\n[localize] complete\n")

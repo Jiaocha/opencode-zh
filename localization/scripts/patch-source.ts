@@ -65,6 +65,32 @@ async function main() {
     }
   }
 
+  const tipsPath = path.join(repo, "packages/opencode/src/cli/cmd/tui/feature-plugins/home/tips-view.tsx")
+  if (await exists(tipsPath)) {
+    let content = await fs.readFile(tipsPath, "utf8")
+    let modified = false
+
+    if (content.includes("staticTip(") && !content.includes("function staticTip(")) {
+      content = content.replace(
+        /const NO_MODELS_TIP = .*\r?\n/,
+        'const NO_MODELS_TIP = t("tui.home.tips.no_models")\n',
+      )
+      content = content.replace(
+        /const NO_MODELS_PARTS = parse\(NO_MODELS_TIP\)\r?\n/,
+        'const NO_MODELS_PARTS = parse(NO_MODELS_TIP)\n\nfunction staticTip(index: number) {\n  return t(`tui.home.tips.${index}`)\n}\n',
+      )
+      modified = true
+    }
+
+    if (modified) {
+      if (!content.includes('import { t } from "@/i18n"')) {
+        content = `import { t } from "@/i18n"\n${content}`
+      }
+      await fs.writeFile(tipsPath, content, "utf8")
+      process.stdout.write("Patched Special: TUI tips static translations\n")
+    }
+  }
+
   const commandPath = path.join(repo, "packages/opencode/src/command/index.ts")
   if (await exists(commandPath)) {
     let content = await fs.readFile(commandPath, "utf8")
