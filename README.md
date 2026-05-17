@@ -130,7 +130,19 @@ bun --cwd packages/web build
 
 运行 Web App：
 
----
+```bash
+bun --cwd packages/app dev
+```
+
+构建 Web App：
+
+```bash
+bun --cwd packages/app build
+```
+
+## 汉化维护
+
+汉化工具链位于 `localization`：
 
 - `localization/dictionaries/zh-CN`：CLI/TUI 词典
 - `localization/scripts/apply-localization.ts`：生成中文 i18n 入口
