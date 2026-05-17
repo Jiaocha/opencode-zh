@@ -77,8 +77,6 @@ const appBindingCommands = [
   "command.palette.show",
   "session.list",
   "session.new",
-  "session.cycle_recent",
-  "session.cycle_recent_reverse",
   "session.quick_switch.1",
   "session.quick_switch.2",
   "session.quick_switch.3",
@@ -482,37 +480,15 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
           dialog.clear()
         },
       },
-      ...(Flag.OPENCODE_EXPERIMENTAL_SESSION_SWITCHING
-        ? [
-            {
-              name: "session.cycle_recent",
-              title: t("tui.cmd.cycle_recent_previous"),
-              category: t("tui.cat.session"),
-              hidden: true,
-              run: () => {
-                local.session.cycleRecent(1)
-              },
-            },
-            {
-              name: "session.cycle_recent_reverse",
-              title: t("tui.cmd.cycle_recent_next"),
-              category: t("tui.cat.session"),
-              hidden: true,
-              run: () => {
-                local.session.cycleRecent(-1)
-              },
-            },
-            ...Array.from({ length: 9 }, (_, i) => ({
-              name: `session.quick_switch.${i + 1}`,
-              title: t("tui.cmd.switch_quick_slot", { slot: i + 1 }),
-              category: t("tui.cat.session"),
-              hidden: true,
-              run: () => {
-                local.session.quickSwitch(i + 1)
-              },
-            })),
-          ]
-        : []),
+      ...Array.from({ length: 9 }, (_, i) => ({
+        name: `session.quick_switch.${i + 1}`,
+        title: `Switch to session in quick slot ${i + 1}`,
+        category: "Session",
+        hidden: true,
+        run: () => {
+          local.session.quickSwitch(i + 1)
+        },
+      })),
       {
         name: "model.list",
         title: t("tui.cmd.switch_model"),
@@ -832,14 +808,7 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
 
   useBindings(() => ({
     enabled: command.matcher,
-    bindings: tuiConfig.keybinds.gather(
-      "app",
-      Flag.OPENCODE_EXPERIMENTAL_SESSION_SWITCHING
-        ? appBindingCommands
-        : appBindingCommands.filter(
-            (c) => !c.startsWith("session.cycle_recent") && !c.startsWith("session.quick_switch"),
-          ),
-    ),
+    bindings: tuiConfig.keybinds.gather("app", appBindingCommands),
   }))
 
   useBindings(() => ({

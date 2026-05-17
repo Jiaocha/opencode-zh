@@ -2,7 +2,6 @@ import { t } from "@/i18n"
 import type { TuiPluginApi } from "@opencode-ai/plugin/tui"
 import { createMemo, For, type Accessor } from "solid-js"
 import { DEFAULT_THEMES, useTheme } from "@tui/context/theme"
-import { Flag } from "@opencode-ai/core/flag/flag"
 import { useCommandShortcut } from "../../keymap"
 
 const themeCount = Object.keys(DEFAULT_THEMES).length
@@ -30,8 +29,6 @@ type Shortcuts = {
   messagesToggleConceal: TipShortcut
   modelCycleRecent: TipShortcut
   modelList: TipShortcut
-  sessionCycleRecent: TipShortcut
-  sessionCycleRecentReverse: TipShortcut
   sessionExport: TipShortcut
   sessionInterrupt: TipShortcut
   sessionList: TipShortcut
@@ -42,7 +39,6 @@ type Shortcuts = {
   sessionQuickSwitch9: TipShortcut
   sessionSidebarToggle: TipShortcut
   sessionTimeline: TipShortcut
-  sessionToggleRecent: TipShortcut
   statusView: TipShortcut
   terminalSuspend: TipShortcut
   themeList: TipShortcut
@@ -73,11 +69,8 @@ function parse(tip: string): TipPart[] {
   return parts
 }
 
-const NO_MODELS_TIP = t("tui.home.tips.no_models")
-
-function staticTip(index: number) {
-  return t(`tui.home.tips.${index}`)
-}
+const NO_MODELS_TIP = "Run {highlight}/connect{/highlight} to add an AI provider and start coding"
+const NO_MODELS_PARTS = parse(NO_MODELS_TIP)
 
 function shortcutText(value: string) {
   return `{highlight}${value}{/highlight}`
@@ -126,8 +119,6 @@ export function Tips(props: { api: TuiPluginApi; connected?: boolean }) {
     messagesToggleConceal: configShortcut(props.api, "session.toggle.conceal"),
     modelCycleRecent: useCommandShortcut("model.cycle_recent"),
     modelList: useCommandShortcut("model.list"),
-    sessionCycleRecent: useCommandShortcut("session.cycle_recent"),
-    sessionCycleRecentReverse: useCommandShortcut("session.cycle_recent_reverse"),
     sessionExport: configShortcut(props.api, "session.export"),
     sessionInterrupt: configShortcut(props.api, "session.interrupt"),
     sessionList: useCommandShortcut("session.list"),
@@ -138,7 +129,6 @@ export function Tips(props: { api: TuiPluginApi; connected?: boolean }) {
     sessionQuickSwitch9: useCommandShortcut("session.quick_switch.9"),
     sessionSidebarToggle: configShortcut(props.api, "session.sidebar.toggle"),
     sessionTimeline: configShortcut(props.api, "session.timeline"),
-    sessionToggleRecent: configShortcut(props.api, "session.toggle.recent"),
     statusView: useCommandShortcut("opencode.status"),
     terminalSuspend: useCommandShortcut("terminal.suspend"),
     themeList: useCommandShortcut("theme.switch"),
@@ -150,8 +140,13 @@ export function Tips(props: { api: TuiPluginApi; connected?: boolean }) {
       return value ? [value] : []
     })
     return tips[Math.floor(tipOffset * tips.length)] ?? NO_MODELS_TIP
-  })
-  const parts = createMemo(() => parse(tip()))
+  }, NO_MODELS_TIP)
+  // Solid can expose a memo's initial value while a pure computation is pending.
+  const parts = createMemo(() => {
+    const value = tip()
+    if (typeof value === "string") return parse(value)
+    return NO_MODELS_PARTS
+  }, NO_MODELS_PARTS)
 
   return (
     <box flexDirection="row" maxWidth="100%">
@@ -168,42 +163,33 @@ export function Tips(props: { api: TuiPluginApi; connected?: boolean }) {
 }
 
 const TIPS: Tip[] = [
-  staticTip(0),
-  staticTip(1),
-  (shortcuts) => press(shortcuts.agentCycle(), "可在 Build 和 Plan 智能体之间切换", staticTip(2)),
-  staticTip(3),
-  staticTip(4),
-  staticTip(5),
-  staticTip(6),
-  (shortcuts) => press(shortcuts.inputPaste(), "从剪贴板粘贴图片到提示框", staticTip(7)),
-  (shortcuts) => `使用 ${commandText("/editor", shortcuts.editorOpen())} 在外部编辑器中编写消息`,
-  staticTip(9),
-  (shortcuts) => `使用 ${commandText("/models", shortcuts.modelList())} 查看并切换可用的 AI 模型`,
-  (shortcuts) => `使用 ${commandText("/themes", shortcuts.themeList())} 在 ${themeCount} 个内置主题间切换`,
-  (shortcuts) => `使用 ${commandText("/new", shortcuts.sessionNew())} 开启新的会话`,
-  (shortcuts) => `使用 ${commandText("/sessions", shortcuts.sessionList())} 列出并继续之前的会话`,
-  ...(Flag.OPENCODE_EXPERIMENTAL_SESSION_SWITCHING
-    ? ([
-        (shortcuts) => press(shortcuts.sessionPinToggle(), "可在会话列表中置顶会话，使其保持在顶部"),
-        (shortcuts) =>
-          shortcuts.sessionQuickSwitch1() && shortcuts.sessionQuickSwitch9()
-            ? `置顶和最近会话会绑定到 ${shortcutText(shortcuts.sessionQuickSwitch1())} 至 ${shortcutText(shortcuts.sessionQuickSwitch9())}，可一键切换`
-            : undefined,
-        (shortcuts) =>
-          shortcuts.sessionCycleRecent() && shortcuts.sessionCycleRecentReverse()
-            ? `按下 ${shortcutText(shortcuts.sessionCycleRecent())} / ${shortcutText(shortcuts.sessionCycleRecentReverse())} 可在最近访问的会话间切换`
-            : undefined,
-        (shortcuts) => press(shortcuts.sessionToggleRecent(), "可在会话列表中显示或隐藏“最近”分组中的会话"),
-      ] satisfies Tip[])
-    : []),
-  staticTip(14),
-  (shortcuts) => `使用 ${commandText("/export", shortcuts.sessionExport())} 将会话保存为 Markdown`,
-  (shortcuts) => press(shortcuts.messagesCopy(), "将助手的最后一条消息复制到剪贴板", staticTip(16)),
-  (shortcuts) => press(shortcuts.commandList(), "查看所有可用的操作和命令", staticTip(17)),
-  staticTip(18),
-  (shortcuts) => `引导键为 ${shortcutText(shortcuts.leader())}；结合其他按键可执行快捷操作`,
-  (shortcuts) => press(shortcuts.modelCycleRecent(), "快速切换最近使用的模型", staticTip(20)),
-  (shortcuts) => press(shortcuts.sessionSidebarToggle(), "可在会话中显示或隐藏侧边栏面板", staticTip(21)),
+  "Type {highlight}@{/highlight} followed by a filename to fuzzy search and attach files",
+  "Start a message with {highlight}!{/highlight} to run shell commands directly (e.g., {highlight}!ls -la{/highlight})",
+  (shortcuts) => press(shortcuts.agentCycle(), "to cycle between Build and Plan agents"),
+  "Use {highlight}/undo{/highlight} to revert the last message and file changes",
+  "Use {highlight}/redo{/highlight} to restore previously undone messages and file changes",
+  "Run {highlight}/share{/highlight} to create a public link to your conversation at opencode.ai",
+  "Drag and drop images or PDFs into the terminal to add them as context",
+  (shortcuts) => press(shortcuts.inputPaste(), "to paste images from your clipboard into the prompt"),
+  (shortcuts) => `Use ${commandText("/editor", shortcuts.editorOpen())} to compose messages in your external editor`,
+  "Run {highlight}/init{/highlight} to auto-generate project rules based on your codebase",
+  (shortcuts) => `Use ${commandText("/models", shortcuts.modelList())} to see and switch between available AI models`,
+  (shortcuts) => `Use ${commandText("/themes", shortcuts.themeList())} to switch between ${themeCount} built-in themes`,
+  (shortcuts) => `Use ${commandText("/new", shortcuts.sessionNew())} to start a fresh conversation session`,
+  (shortcuts) => `Use ${commandText("/sessions", shortcuts.sessionList())} to list, pin, and continue sessions`,
+  (shortcuts) => press(shortcuts.sessionPinToggle(), "in the session list to pin a session so it stays at the top"),
+  (shortcuts) =>
+    shortcuts.sessionQuickSwitch1() && shortcuts.sessionQuickSwitch9()
+      ? `Pinned sessions are assigned quick slots; use ${shortcutText(shortcuts.sessionQuickSwitch1())} through ${shortcutText(shortcuts.sessionQuickSwitch9())} to switch`
+      : undefined,
+  "Run {highlight}/compact{/highlight} to summarize long sessions near context limits",
+  (shortcuts) => `Use ${commandText("/export", shortcuts.sessionExport())} to save the conversation as Markdown`,
+  (shortcuts) => press(shortcuts.messagesCopy(), "to copy the assistant's last message to clipboard"),
+  (shortcuts) => press(shortcuts.commandList(), "to see all available actions and commands"),
+  "Run {highlight}/connect{/highlight} to add API keys for 75+ supported LLM providers",
+  (shortcuts) => `The leader key is ${shortcutText(shortcuts.leader())}; combine with other keys for quick actions`,
+  (shortcuts) => press(shortcuts.modelCycleRecent(), "to quickly switch between recently used models"),
+  (shortcuts) => press(shortcuts.sessionSidebarToggle(), "in a session to show or hide the sidebar panel"),
   (shortcuts) =>
     shortcuts.messagesPageUp() && shortcuts.messagesPageDown()
       ? `使用 ${shortcutText(shortcuts.messagesPageUp())}/${shortcutText(shortcuts.messagesPageDown())} 浏览会话历史`
