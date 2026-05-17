@@ -9,8 +9,8 @@
     "packages/opencode/src/i18n/zh-cn.ts",
     "packages/opencode/src/i18n/index.ts"
   ],
-  "appliedAt": "2026-05-16T00:14:43.379Z",
-  "keysCount": 1057,
+  "appliedAt": "2026-05-17T02:41:48.832Z",
+  "keysCount": 1058,
   "keys": [
     "cli.cmd.account.describe",
     "cli.cmd.acp.describe",
@@ -335,6 +335,7 @@
     "tui.common.space_key",
     "tui.common.submit",
     "tui.common.suggested",
+    "tui.common.switch",
     "tui.common.tab",
     "tui.common.today",
     "tui.common.toggle",

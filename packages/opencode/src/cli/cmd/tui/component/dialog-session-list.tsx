@@ -143,7 +143,7 @@ export function DialogSessionList() {
   })
   const quickSwitchFooterHints = createMemo(() => {
     const hint = quickSwitchHint()
-    return hint && local.session.slots().length > 0 ? [{ title: "switch", label: hint }] : []
+    return hint && local.session.slots().length > 0 ? [{ title: t("tui.common.switch"), label: hint }] : []
   })
 
   const options = createMemo(() => {
@@ -212,7 +212,7 @@ export function DialogSessionList() {
       })
       .filter((x) => x !== undefined)
 
-    return [...pinned.map((id) => buildOption(id, "Pinned")).filter((x) => x !== undefined), ...remaining]
+    return [...pinned.map((id) => buildOption(id, t("tui.session.pinned"))).filter((x) => x !== undefined), ...remaining]
   })
 
   onMount(() => {
@@ -239,7 +239,7 @@ export function DialogSessionList() {
       actions={[
         {
           command: "session.pin.toggle",
-          title: "pin/unpin",
+          title: t("tui.session.pin_unpin"),
           onTrigger: (option: { value: string }) => {
             local.session.togglePin(option.value)
           },

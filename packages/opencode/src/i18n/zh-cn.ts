@@ -1,6 +1,6 @@
 /**
  * OpenCode 中文词典（自动生成）
- * 更新时间: 2026-05-16T00:14:43.379Z
+ * 更新时间: 2026-05-17T02:41:48.832Z
  */
 export const zh = {
   cli: {
@@ -460,6 +460,7 @@ export const zh = {
       space_key: "空格",
       submit: "提交",
       suggested: "建议",
+      switch: "切换",
       tab: "切换标签",
       today: "今天",
       toggle: "切换",

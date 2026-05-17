@@ -69,8 +69,12 @@ function parse(tip: string): TipPart[] {
   return parts
 }
 
-const NO_MODELS_TIP = "Run {highlight}/connect{/highlight} to add an AI provider and start coding"
+const NO_MODELS_TIP = t("tui.home.tips.no_models")
 const NO_MODELS_PARTS = parse(NO_MODELS_TIP)
+
+function staticTip(index: number) {
+  return t(`tui.home.tips.${index}`)
+}
 
 function shortcutText(value: string) {
   return `{highlight}${value}{/highlight}`
@@ -163,33 +167,33 @@ export function Tips(props: { api: TuiPluginApi; connected?: boolean }) {
 }
 
 const TIPS: Tip[] = [
-  "Type {highlight}@{/highlight} followed by a filename to fuzzy search and attach files",
-  "Start a message with {highlight}!{/highlight} to run shell commands directly (e.g., {highlight}!ls -la{/highlight})",
-  (shortcuts) => press(shortcuts.agentCycle(), "to cycle between Build and Plan agents"),
-  "Use {highlight}/undo{/highlight} to revert the last message and file changes",
-  "Use {highlight}/redo{/highlight} to restore previously undone messages and file changes",
-  "Run {highlight}/share{/highlight} to create a public link to your conversation at opencode.ai",
-  "Drag and drop images or PDFs into the terminal to add them as context",
-  (shortcuts) => press(shortcuts.inputPaste(), "to paste images from your clipboard into the prompt"),
-  (shortcuts) => `Use ${commandText("/editor", shortcuts.editorOpen())} to compose messages in your external editor`,
-  "Run {highlight}/init{/highlight} to auto-generate project rules based on your codebase",
-  (shortcuts) => `Use ${commandText("/models", shortcuts.modelList())} to see and switch between available AI models`,
-  (shortcuts) => `Use ${commandText("/themes", shortcuts.themeList())} to switch between ${themeCount} built-in themes`,
-  (shortcuts) => `Use ${commandText("/new", shortcuts.sessionNew())} to start a fresh conversation session`,
-  (shortcuts) => `Use ${commandText("/sessions", shortcuts.sessionList())} to list, pin, and continue sessions`,
-  (shortcuts) => press(shortcuts.sessionPinToggle(), "in the session list to pin a session so it stays at the top"),
+  "输入 {highlight}@{/highlight} 后跟文件名，可模糊搜索并附加文件",
+  "以 {highlight}!{/highlight} 开头可直接运行 shell 命令（例如 {highlight}!ls -la{/highlight}）",
+  (shortcuts) => press(shortcuts.agentCycle(), "在 Build 和 Plan 智能体之间切换"),
+  "使用 {highlight}/undo{/highlight} 撤销上一条消息和文件更改",
+  "使用 {highlight}/redo{/highlight} 恢复之前撤销的消息和文件更改",
+  "运行 {highlight}/share{/highlight} 为当前会话创建 opencode.ai 公开链接",
+  "将图片或 PDF 拖放到终端，可作为上下文添加",
+  (shortcuts) => press(shortcuts.inputPaste(), "从剪贴板粘贴图片到提示框"),
+  (shortcuts) => `使用 ${commandText("/editor", shortcuts.editorOpen())} 在外部编辑器中编写消息`,
+  "运行 {highlight}/init{/highlight} 根据代码库自动生成项目规则",
+  (shortcuts) => `使用 ${commandText("/models", shortcuts.modelList())} 查看并切换可用的 AI 模型`,
+  (shortcuts) => `使用 ${commandText("/themes", shortcuts.themeList())} 在 ${themeCount} 个内置主题间切换`,
+  (shortcuts) => `使用 ${commandText("/new", shortcuts.sessionNew())} 开启新的会话`,
+  (shortcuts) => `使用 ${commandText("/sessions", shortcuts.sessionList())} 列出、固定并继续会话`,
+  (shortcuts) => press(shortcuts.sessionPinToggle(), "在会话列表中固定会话，使其保持在顶部"),
   (shortcuts) =>
     shortcuts.sessionQuickSwitch1() && shortcuts.sessionQuickSwitch9()
-      ? `Pinned sessions are assigned quick slots; use ${shortcutText(shortcuts.sessionQuickSwitch1())} through ${shortcutText(shortcuts.sessionQuickSwitch9())} to switch`
+      ? `已固定的会话会分配快速槽；使用 ${shortcutText(shortcuts.sessionQuickSwitch1())} 到 ${shortcutText(shortcuts.sessionQuickSwitch9())} 可快速切换`
       : undefined,
-  "Run {highlight}/compact{/highlight} to summarize long sessions near context limits",
-  (shortcuts) => `Use ${commandText("/export", shortcuts.sessionExport())} to save the conversation as Markdown`,
-  (shortcuts) => press(shortcuts.messagesCopy(), "to copy the assistant's last message to clipboard"),
-  (shortcuts) => press(shortcuts.commandList(), "to see all available actions and commands"),
-  "Run {highlight}/connect{/highlight} to add API keys for 75+ supported LLM providers",
-  (shortcuts) => `The leader key is ${shortcutText(shortcuts.leader())}; combine with other keys for quick actions`,
-  (shortcuts) => press(shortcuts.modelCycleRecent(), "to quickly switch between recently used models"),
-  (shortcuts) => press(shortcuts.sessionSidebarToggle(), "in a session to show or hide the sidebar panel"),
+  "运行 {highlight}/compact{/highlight} 摘要压缩接近上下文上限的长会话",
+  (shortcuts) => `使用 ${commandText("/export", shortcuts.sessionExport())} 将会话保存为 Markdown`,
+  (shortcuts) => press(shortcuts.messagesCopy(), "将助手的最后一条消息复制到剪贴板"),
+  (shortcuts) => press(shortcuts.commandList(), "查看所有可用的操作和命令"),
+  "运行 {highlight}/connect{/highlight} 为 75+ 个支持的 LLM 提供商添加 API 密钥",
+  (shortcuts) => `引导键为 ${shortcutText(shortcuts.leader())}；可与其他按键组合执行快捷操作`,
+  (shortcuts) => press(shortcuts.modelCycleRecent(), "快速切换最近使用的模型"),
+  (shortcuts) => press(shortcuts.sessionSidebarToggle(), "在会话中显示或隐藏侧边栏面板"),
   (shortcuts) =>
     shortcuts.messagesPageUp() && shortcuts.messagesPageDown()
       ? `使用 ${shortcutText(shortcuts.messagesPageUp())}/${shortcutText(shortcuts.messagesPageDown())} 浏览会话历史`

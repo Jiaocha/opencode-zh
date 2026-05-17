@@ -482,8 +482,8 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
       },
       ...Array.from({ length: 9 }, (_, i) => ({
         name: `session.quick_switch.${i + 1}`,
-        title: `Switch to session in quick slot ${i + 1}`,
-        category: "Session",
+        title: t("tui.cmd.switch_quick_slot", { slot: i + 1 }),
+        category: t("tui.cat.session"),
         hidden: true,
         run: () => {
           local.session.quickSwitch(i + 1)
