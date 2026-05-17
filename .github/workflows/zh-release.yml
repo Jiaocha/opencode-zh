@@ -86,7 +86,7 @@ jobs:
           preserve_items=(
             README.md
             localization
-            .github/workflows/zh-release.yml
+            .github/workflows
             .github/actions/setup-bun/action.yml
             script/zh-release-notes.ts
             packages/desktop/electron-builder.config.ts
