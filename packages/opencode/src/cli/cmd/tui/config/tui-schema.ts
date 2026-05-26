@@ -61,6 +61,15 @@ export const Attention = Schema.Struct({
   sounds: Schema.optional(TuiAttentionSounds),
 }).annotate({ description: "注意力提醒、通知和声音设置" })
 
+const PromptSize = Schema.Int.check(Schema.isGreaterThan(0))
+
+export const Prompt = Schema.Struct({
+  max_height: Schema.optional(PromptSize).annotate({ description: "提示输入框最大高度" }),
+  max_width: Schema.optional(Schema.Union([PromptSize, Schema.Literal("auto")])).annotate({
+    description: "首页提示输入框最大宽度：正整数表示固定上限，或使用 'auto' 随终端宽度缩放",
+  }),
+}).annotate({ description: "提示输入框尺寸设置" })
+
 export const TuiInfo = Schema.Struct({
   $schema: Schema.optional(Schema.String),
   theme: Schema.optional(Schema.String),
@@ -69,6 +78,7 @@ export const TuiInfo = Schema.Struct({
   plugin_enabled: Schema.optional(Schema.Record(Schema.String, Schema.Boolean)),
   leader_timeout: Schema.optional(KeymapLeaderTimeout),
   attention: Schema.optional(Attention),
+  prompt: Schema.optional(Prompt),
   scroll_speed: Schema.optional(ScrollSpeed).annotate({
     description: "TUI 滚动速度",
   }),

@@ -2,8 +2,10 @@ import { t } from "@/i18n"
 import { TextareaRenderable, TextAttributes } from "@opentui/core"
 import { useTheme } from "../context/theme"
 import { useDialog, type DialogContext } from "./dialog"
-import { Show, createEffect, onMount, type JSX } from "solid-js"
+import { Show, createEffect, createSignal, onMount, type JSX } from "solid-js"
 import { Spinner } from "../component/spinner"
+import { useTuiConfig } from "../context/tui-config"
+import { useBindings, useCommandShortcut } from "../keymap"
 
 export type DialogPromptProps = {
   title: string
@@ -19,7 +21,31 @@ export type DialogPromptProps = {
 export function DialogPrompt(props: DialogPromptProps) {
   const dialog = useDialog()
   const { theme } = useTheme()
+  const tuiConfig = useTuiConfig()
+  const submitShortcut = useCommandShortcut("dialog.prompt.submit")
+  const [textareaTarget, setTextareaTarget] = createSignal<TextareaRenderable>()
   let textarea: TextareaRenderable
+
+  function confirm() {
+    if (props.busy) return
+    props.onConfirm?.(textarea.plainText)
+  }
+
+  useBindings(() => ({
+    target: textareaTarget,
+    enabled: textareaTarget() !== undefined && !props.busy,
+    // Dialog form semantics must win over the global managed textarea input layer.
+    priority: 1,
+    commands: [
+      {
+        name: "dialog.prompt.submit",
+        title: t("tui.dialog.prompt_submit"),
+        category: t("tui.cat.dialog"),
+        run: confirm,
+      },
+    ],
+    bindings: tuiConfig.keybinds.gather("dialog.prompt", ["dialog.prompt.submit"]),
+  }))
 
   onMount(() => {
     dialog.setSize("medium")
@@ -60,13 +86,10 @@ export function DialogPrompt(props: DialogPromptProps) {
       <box gap={1}>
         {props.description}
         <textarea
-          onSubmit={() => {
-            if (props.busy) return
-            props.onConfirm?.(textarea.plainText)
-          }}
           height={3}
           ref={(val: TextareaRenderable) => {
             textarea = val
+            setTextareaTarget(val)
           }}
           initialValue={props.value}
           placeholder={props.placeholder ?? "Enter text"}
@@ -81,9 +104,11 @@ export function DialogPrompt(props: DialogPromptProps) {
       </box>
       <box paddingBottom={1} gap={1} flexDirection="row">
         <Show when={!props.busy} fallback={<text fg={theme.textMuted}>{t("tui.common.processing")}</text>}>
-          <text fg={theme.text}>
-            enter <span style={{ fg: theme.textMuted }}>{t("tui.common.submit")}</span>
-          </text>
+          <Show when={submitShortcut()}>
+            <text fg={theme.text}>
+              {submitShortcut()} <span style={{ fg: theme.textMuted }}>{t("tui.common.submit")}</span>
+            </text>
+          </Show>
         </Show>
       </box>
     </box>

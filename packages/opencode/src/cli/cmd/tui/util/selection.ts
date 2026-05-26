@@ -8,6 +8,7 @@ type Toast = {
 
 type FocusableSelectionTarget = {
   hasSelection: () => boolean
+  getClipboardText?: (text: string) => string
 }
 
 type Renderer = {
@@ -24,10 +25,17 @@ type SelectionKeyEvent = {
 }
 
 export function copy(renderer: Renderer, toast: Toast): boolean {
-  const text = renderer.getSelection()?.getSelectedText()
+  const selection = renderer.getSelection()
+  if (!selection) return false
+
+  const text = selection.getSelectedText()
   if (!text) return false
 
-  Clipboard.copy(text)
+  const focus = renderer.currentFocusedRenderable
+  const clipboardText =
+    focus?.getClipboardText && selection.selectedRenderables.includes(focus) ? focus.getClipboardText(text) : text
+
+  Clipboard.copy(clipboardText)
     .then(() => toast.show({ message: t("tui.provider.copied_to_clipboard"), variant: "info" }))
     .catch(toast.error)
 

@@ -1,13 +1,13 @@
 import { useRenderer, useTerminalDimensions } from "@opentui/solid"
-import { batch, createContext, Show, useContext, type JSX, type ParentProps } from "solid-js"
+import { batch, createContext, createEffect, onCleanup, Show, useContext, type JSX, type ParentProps } from "solid-js"
 import { useTheme } from "@tui/context/theme"
 import { MouseButton, Renderable, RGBA } from "@opentui/core"
 import { createStore } from "solid-js/store"
 import { useToast } from "./toast"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import * as Selection from "@tui/util/selection"
-import { useBindings } from "../keymap"
 import { t } from "@/i18n"
+import { useBindings, useOpencodeModeStack } from "../keymap"
 
 export function Dialog(
   props: ParentProps<{
@@ -74,6 +74,13 @@ function init() {
   })
 
   const renderer = useRenderer()
+  const modeStack = useOpencodeModeStack()
+
+  createEffect(() => {
+    if (store.stack.length === 0) return
+    const popMode = modeStack.push("modal")
+    onCleanup(popMode)
+  })
 
   let focus: Renderable | null
   function refocus() {
